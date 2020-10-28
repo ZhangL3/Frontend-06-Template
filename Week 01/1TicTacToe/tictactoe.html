@@ -29,12 +29,12 @@
 
     <script>
         let pattern = [
-            0, 2, 0,
+            0, 0, 0,
             0, 1, 0,
             0, 0, 0
         ];
 
-        let color = 1;
+        let color = 2;
 
         function show() {
             const board = document.getElementById('board');
@@ -64,6 +64,7 @@
 
             color = 3 - color;
             show();
+            console.log('bestChoice: ', bestChoice(pattern, color));
 
             if (willWin(pattern, color)) {
                 console.log(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
@@ -87,7 +88,7 @@
             for(let i = 0; i < 3; i += 1) {
                 let win = true;
                 for (let j = 0; j < 3; j += 1) {
-                    if (pattern[j][i] !== color) {
+                    if (pattern[j * 3 + i] !== color) {
                         win = false;
                     }
                 }
@@ -99,7 +100,7 @@
             {
                 let win = true;
                 for(let j = 0; j < 3; j += 1) {
-                    if(pattern[j][2-j] !== color) {
+                    if(pattern[j * 3 + 2 - j] !== color) {
                         win = false;
                     }
                 }
@@ -111,7 +112,7 @@
             {
                 let win = true;
                 for(let j = 0; j < 3; j += 1) {
-                    if(pattern[j][j] !== color) {
+                    if(pattern[j * 3 + j] !== color) {
                         win = false;
                     }
                 }
@@ -184,7 +185,6 @@
         }
 
         show();
-        console.log('bestChoice: ', bestChoice(pattern, color));
 
         /* function coordinate(row, col) {
             let r = '';
