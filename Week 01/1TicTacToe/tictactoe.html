@@ -30,7 +30,7 @@
     <script>
         let pattern = [
             0, 0, 0,
-            0, 1, 0,
+            0, 0, 0,
             0, 0, 0
         ];
 
@@ -124,7 +124,8 @@
 
         // 复制原 pattern
         function clone(pattern) {
-            return JSON.parse(JSON.stringify(pattern));
+            // 一维数组可以简单复制
+            return Object.create(pattern);
         }
 
         // 遍历所有没有落子的点位，检查是否会赢
