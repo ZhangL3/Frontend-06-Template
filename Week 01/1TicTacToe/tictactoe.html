@@ -29,9 +29,9 @@
 
     <script>
         let pattern = [
-            [0, 2, 0],
-            [0, 1, 0],
-            [0, 0, 0]
+            0, 2, 0,
+            0, 1, 0,
+            0, 0, 0
         ];
 
         let color = 1;
@@ -46,8 +46,8 @@
                     let cell = document.createElement('div');
                     cell.classList.add('cell');
                     cell.innerText = 
-                        pattern[i][j] === 2 ? 'X' :
-                        pattern[i][j] === 1 ? 'O' : '';
+                        pattern[i * 3 + j] === 2 ? 'X' :
+                        pattern[i * 3 + j] === 1 ? 'O' : '';
                     cell.addEventListener('click', () => move(i, j));
                     board.append(cell);
                 }
@@ -56,7 +56,7 @@
         }
 
         function move(x, y) {
-            pattern[x][y] = color;
+            pattern[x * 3 + y] = color;
 
             if (check(pattern, color)) {
                 alert(color === 2 ? 'X is winner' : 'O is winner');
@@ -75,7 +75,7 @@
             for(let i = 0; i < 3; i += 1) {
                 let win = true;
                 for (let j = 0; j < 3; j += 1) {
-                    if (pattern[i][j] !== color) {
+                    if (pattern[i * 3 + j] !== color) {
                         win = false;
                     }
                 }
@@ -130,10 +130,10 @@
         function willWin(pattern, color) {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
-                    if (pattern[i][j])
+                    if (pattern[i * 3 + j])
                         continue;
                     let tmp = clone(pattern);
-                    tmp[i][j] = color;
+                    tmp[i * 3 + j] = color;
                     if(check(tmp, color)) {
                         return [i, j];
                     }
@@ -159,11 +159,11 @@
             let result = -2;
             let point = null;
             // 把空白的所有格子遍历一遍
-            for(let i = 0; i < 3; i++) {
+            outer:for(let i = 0; i < 3; i++) {
                 for(let j = 0; j < 3; j++) {
-                    if(pattern[i][j]) continue;
+                    if(pattern[i * 3 + j]) continue;
                     let tmp = clone(pattern);
-                    tmp[i][j] = color;
+                    tmp[i * 3 + j] = color;
                     // 当我走这步的时候，对手的最好的选择是什么
                     let r = bestChoice(tmp, 3 - color).result;
                     // 对手最好，意味着我最坏。我最坏的结果比之前的选择要好，那就暂定当前这个最坏的结果
@@ -172,11 +172,8 @@
                         point = [j, i];
                     }
                     // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（剪枝）
-                    if(-r === 1) {
-                        return {
-                            point,
-                            result : 1,
-                        }
+                    if(result === 1) {
+                        break outer;
                     }
                 }
             }
