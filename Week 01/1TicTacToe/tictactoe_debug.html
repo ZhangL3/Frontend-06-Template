@@ -65,6 +65,7 @@
 
             color = 3 - color;
             show();
+            console.log(bestChoice(pattern, color));
 
             if (willWin(pattern, color)) {
                 console.log(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
@@ -148,7 +149,7 @@
 
         // 复制原 pattern
         function clone(pattern) {
-            return JSON.parse(JSON.stringify(pattern));
+            return Object.create(pattern);
         }
 
         // 遍历所有没有落子的点位，检查在下一步是否会赢
@@ -180,7 +181,7 @@
             let result = -2;
             let point = null;
             // 把空白的所有格子遍历一遍
-            for(let i = 0; i < 3; i++) {
+            outer: for(let i = 0; i < 3; i++) {
                 for(let j = 0; j < 3; j++) {
                     if(pattern[i * 3 + j])
                         continue;
@@ -194,11 +195,8 @@
                         point = [j, i];
                     }
                     // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（胜负剪枝）
-                    if(-r === 1) {
-                        return {
-                            point,
-                            result : 1,
-                        }
+                    if(result === 1) {
+                        break outer;
                     }
                 }
             }
