@@ -45,8 +45,15 @@
             }, 10000);
         }
 
+        // promise 的好处是可以轻松替换异步函数，如 delay 和 happen 可以呼唤
         function delay(sec) {
             return new Promise((resolve, reject) => setTimeout(() => resolve(), sec * 1000));
+        }
+
+        function happen(element, eventName) {
+            return new Promise((resolve, reject) => {
+                element.addEventListener(eventName, resolve, { once: true });
+            });
         }
 
         function goPromise() {
