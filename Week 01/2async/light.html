@@ -53,13 +53,9 @@
             light.classList='green';
             delay(10).then(() => {
                 light.classList='yellow';
-                return;
-            }).then(() => {
                 return delay(2);
             }).then(() => {
                 light.classList='red';
-                return;
-            }).then(() => {
                 return delay(5);
             }).then(() => {
                 goPromise();
