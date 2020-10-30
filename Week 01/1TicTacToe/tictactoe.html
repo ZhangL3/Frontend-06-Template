@@ -28,6 +28,7 @@
     <div id="board"></div>
 
     <script>
+        // x 轴是 3 的倍数的余数， y 轴是3的倍数
         let pattern = [
             0, 0, 0,
             0, 0, 0,
@@ -48,32 +49,16 @@
                     cell.innerText = 
                         pattern[i * 3 + j] === 2 ? 'X' :
                         pattern[i * 3 + j] === 1 ? 'O' : '';
-                    cell.addEventListener('click', () => userMove(i, j));
+                    cell.addEventListener('click', () => userMove(j, i));
                     board.append(cell);
                 }
                 board.appendChild(document.createElement('br'));
             }
         }
 
-        function move(x, y) {
-            pattern[x * 3 + y] = color;
-
-            if (check(pattern, color)) {
-                alert(color === 2 ? 'X is winner' : 'O is winner');
-            }
-
-            color = 3 - color;
-            show();
-            console.log('bestChoice: ', bestChoice(pattern, color));
-
-            if (willWin(pattern, color)) {
-                console.log(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
-            }
-        }
-
         function userMove(x, y) {
-            console.log('userMove: ', color);
-            pattern[x * 3 + y] = color;
+            console.log('userMove: ', y,x);
+            pattern[y * 3 + x] = color;
             if (check(pattern, color)) {
                 alert(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
             }
@@ -84,15 +69,14 @@
 
         function computerMove() {
             let choice = bestChoice(pattern, color);
-            console.log(choice);
+            console.log('bestChoice of computer: ', choice);
             if(choice.point)
-                pattern[choice.point[0] * 3 + choice.point[1]] = color;
+                pattern[choice.point[1] * 3 + choice.point[0]] = color;
             if(check(pattern, color)) {
                 alert(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
             }
             color = 3 - color;
             show();
-            console.log('after computer move: ', color);
         }
 
         function check(pattern, color) {
@@ -148,11 +132,10 @@
 
         // 复制原 pattern
         function clone(pattern) {
-            // 一维数组可以简单复制
             return Object.create(pattern);
         }
 
-        // 遍历所有没有落子的点位，检查是否会赢
+        // 遍历所有没有落子的点位，检查在下一步是否会赢
         function willWin(pattern, color) {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
@@ -161,7 +144,7 @@
                     let tmp = clone(pattern);
                     tmp[i * 3 + j] = color;
                     if(check(tmp, color)) {
-                        return [i, j];
+                        return [j, i];
                     }
                 }
             }
@@ -181,9 +164,10 @@
             let result = -2;
             let point = null;
             // 把空白的所有格子遍历一遍
-            outer:for(let i = 0; i < 3; i++) {
+            outer: for(let i = 0; i < 3; i++) {
                 for(let j = 0; j < 3; j++) {
-                    if(pattern[i * 3 + j]) continue;
+                    if(pattern[i * 3 + j])
+                        continue;
                     let tmp = clone(pattern);
                     tmp[i * 3 + j] = color;
                     // 当我走这步的时候，对手的最好的选择是什么
@@ -193,7 +177,7 @@
                         result = -r;
                         point = [j, i];
                     }
-                    // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（剪枝）
+                    // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（胜负剪枝）
                     if(result === 1) {
                         break outer;
                     }
@@ -206,6 +190,7 @@
         }
 
         show();
+        console.log('bestChoice: ', bestChoice(pattern, color));
 
         /* function coordinate(row, col) {
             let r = '';
