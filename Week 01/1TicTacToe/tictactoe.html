@@ -34,7 +34,7 @@
             0, 0, 0
         ];
 
-        let color = 2;
+        let color = 1;
 
         function show() {
             const board = document.getElementById('board');
@@ -48,7 +48,7 @@
                     cell.innerText = 
                         pattern[i * 3 + j] === 2 ? 'X' :
                         pattern[i * 3 + j] === 1 ? 'O' : '';
-                    cell.addEventListener('click', () => move(i, j));
+                    cell.addEventListener('click', () => userMove(i, j));
                     board.append(cell);
                 }
                 board.appendChild(document.createElement('br'));
@@ -69,6 +69,30 @@
             if (willWin(pattern, color)) {
                 console.log(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
             }
+        }
+
+        function userMove(x, y) {
+            console.log('userMove: ', color);
+            pattern[x * 3 + y] = color;
+            if (check(pattern, color)) {
+                alert(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
+            }
+            color = 3 - color;
+            show();
+            computerMove();
+        }
+
+        function computerMove() {
+            let choice = bestChoice(pattern, color);
+            console.log(choice);
+            if(choice.point)
+                pattern[choice.point[0] * 3 + choice.point[1]] = color;
+            if(check(pattern, color)) {
+                alert(color === 2 ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
+            }
+            color = 3 - color;
+            show();
+            console.log('after computer move: ', color);
         }
 
         function check(pattern, color) {
@@ -147,11 +171,7 @@
         function bestChoice(pattern, color) {
             let p;
             // 给 p 赋值并判断
-            console.log('---------------------');
-            console.log('begin bestChoice pattern: ', pattern);
-            console.log('color: ', color);
             p = willWin(pattern, color)
-            console.log('p: ', p)
             if (p) {
                 return {
                     point: p,
