@@ -29,8 +29,8 @@
 
     <script>
         let pattern = [
-            [0, 0, 0],
-            [0, 0, 0],
+            [0, 0, 2],
+            [0, 1, 0],
             [0, 0, 0]
         ];
 
@@ -47,9 +47,7 @@
                     cell.classList.add('cell');
                     cell.innerText = 
                         pattern[i][j] === 2 ? 'X' :
-                        // pattern[i][j] === 1 ? 'O' : '';
-                        pattern[i][j] === 1 ? 'O' :
-                        pattern[i][j] === 3 ? 'A' : '';
+                        pattern[i][j] === 1 ? 'O' : '';
                     cell.addEventListener('click', () => move(j, i));
                     board.append(cell);
                 }
@@ -168,14 +166,10 @@
             return null;
         }
 
-        /* function bestChoice(pattern, color) {
+        function bestChoice(pattern, color) {
             let p;
             // 给 p 赋值并判断
-            // console.log('---------------------');
-            // console.log('begin bestChoice pattern: ', pattern);
-            // console.log('color: ', color);
             p = willWin(pattern, color)
-            // console.log('p: ', p)
             if (p) {
                 return {
                     point: p,
@@ -187,7 +181,8 @@
             // 把空白的所有格子遍历一遍
             for(let i = 0; i < 3; i++) {
                 for(let j = 0; j < 3; j++) {
-                    if(pattern[i][j]) continue;
+                    if(pattern[i][j])
+                        continue;
                     let tmp = clone(pattern);
                     tmp[i][j] = color;
                     // 当我走这步的时候，对手的最好的选择是什么
@@ -197,7 +192,7 @@
                         result = -r;
                         point = [j, i];
                     }
-                    // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（剪枝）
+                    // 如果已经找到对对手最坏，对自己最好的结果，可以直接输出（胜负剪枝）
                     if(-r === 1) {
                         return {
                             point,
@@ -210,10 +205,10 @@
                 point,
                 result: point ? result : 0
             }
-        } */
+        }
 
         show();
-        // console.log('bestChoice: ', bestChoice(pattern, color));
+        console.log('bestChoice: ', bestChoice(pattern, color));
 
         /* function coordinate(row, col) {
             let r = '';
