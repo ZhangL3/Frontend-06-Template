@@ -45,6 +45,7 @@
         const X_VALUE = 2;
         let color = O_VALUE;
 
+        
         function show() {
             const board = document.getElementById('board');
 
@@ -57,7 +58,7 @@
                     cell.innerText = 
                         pattern[i * 3 + j] === X_VALUE ? 'X' :
                         pattern[i * 3 + j] === O_VALUE ? 'O' : '';
-                    cell.addEventListener('click', () => userMove(j, i));
+                    cell.addEventListener('click', () => userMove(i, j));
                     board.append(cell);
                 }
                 board.appendChild(document.createElement('br'));
@@ -65,8 +66,7 @@
         }
 
         function userMove(x, y) {
-            console.log('userMove: ', y,x);
-            pattern[y * 3 + x] = color;
+            pattern[x * 3 + y] = color;
             if (check(pattern, color)) {
                 alert(color === X_VALUE ? `X will win at ${willWin(pattern, color)} !` : `O will win at ${willWin(pattern, color)} !`);
             }
