@@ -176,14 +176,17 @@ function willWin(pattern, color) {
  * @param {number} color 
  */
 function bestChoice(pattern, color) {
+    // 递归第一步：结束条件
     let p;
-    // N给 p 赋值并判断
+    // 给 p 赋值并判断。如果下一步能分出胜负，结束递归，返回 p
     if (p = willWin(pattern, color)) {
         return {
             point: p,
             result: 1,
         }
     }
+
+    // 递归第二步: 当前层
     let result = -2;
     let point = null;
     // 把空白的所有格子遍历一遍
@@ -193,8 +196,12 @@ function bestChoice(pattern, color) {
                 continue;
             let tmp = clone(pattern);
             tmp[i * 3 + j] = color;
+            
+            // 递归第三步: 进入下一层。自己和对手交替进入下一层
             // 当我走这步的时候，对手的最好的选择是什么
             let r = bestChoice(tmp, 3 - color).result;
+
+            // 递归：增加退出递归的条件
             // 对手最好，意味着我最坏。我最坏的结果比之前的选择要好，那就暂定当前这个最坏的结果
             if(-r > result) {
                 result = -r;
