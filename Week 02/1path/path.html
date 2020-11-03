@@ -1,3 +1,4 @@
+<!-- 去掉 !DOCTYPE 也可以解决行间距的问题，应该和浏览器默认的输出html的样式有关 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,14 @@
         }
         #container {
             width: 701px;
+            /* 
+                line-height 和 font-size 任意一个都可以
+                line-height 直接规定行高
+                font-size 换行符会占一个字符宽度，随字体大小变化s
+                inline-block的元素之间会有一个字符的间隙，这个间隙导致了最后一个()会掉下来
+             */
             line-height: 7px;
+            /* font-size: 0; */
         }
     </style>
 
