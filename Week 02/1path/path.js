@@ -1,3 +1,45 @@
+/**
+ * 自定义一个数据结构，每次 take 都是 data 里的最小值, 如果用默认 compare 函数的话
+ */
+class Sorted {
+    /**
+     * 
+     * @param {*} data 
+     * @param {*} compare 
+     */
+    constructor(data, compare) {
+        // slice() 浅拷贝
+        this.data = data.slice();
+        // 和 sort() 一样，可以传 compare 函数
+        this.compare = compare || ((a, b) => a - b);
+    }
+
+    take() {
+        if (!this.data.length)
+            return;
+        let min = this.data[0];
+        let minIndex = 0;
+        // 默认找到最小的值
+        // 这里其实可以用 Math.min() 函数
+        // 但是因为后面删除的时候要用的 index， 所以直接用 for 循环更省资源
+        for (let i = 1; i < this.data.length; i ++) {
+            if (this.compare(this.data[i], min) < 0) {
+                min = this.data[i];
+                minIndex = i;
+            }
+        }
+        // 删除找出的值，但不用 splice() ,因为 splice() 是 O(n) 的复杂度，可以用更简单的 O(1)
+        // 找到的 min 值已经被存好了，所以 minIndex 可以用来存最后一位的值，然后删掉最后一位就可以了
+        this.data[minIndex] = this.data[this.data.length - 1];
+        this.data.pop();
+        return min;
+    }
+
+    give(v) {
+        this.data.push(v);
+    }
+}
+
 let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
 
 let container = document.getElementById('container');
