@@ -65,7 +65,7 @@ y(i)
     }
 (```)
 
-### 异步的三个fangfa
+### 异步的三个方法
 
 callback, promise, async/await
 promise 的关键在于，帮助异步函数用同步的方法写出。这样有利于功能上的替换，如 delay 和 happen 函数的替换
