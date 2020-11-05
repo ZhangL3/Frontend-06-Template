@@ -1,3 +1,4 @@
+// TODO: Sorted 用二叉堆实现更好
 /**
  * 自定义一个数据结构，每次 take 都是 data 里的最小值, 如果用默认 compare 函数的话
  */
@@ -14,14 +15,15 @@ class Sorted {
         this.compare = compare || ((a, b) => a - b);
     }
 
+    /**
+     * 按 compare 取值
+     */
     take() {
         if (!this.data.length)
             return;
         let min = this.data[0];
         let minIndex = 0;
-        // 默认找到最小的值
-        // 这里其实可以用 Math.min() 函数
-        // 但是因为后面删除的时候要用的 index， 所以直接用 for 循环更省资源
+        // 按给入 compare 取值，默认找到最小的值
         for (let i = 1; i < this.data.length; i ++) {
             if (this.compare(this.data[i], min) < 0) {
                 min = this.data[i];
@@ -35,11 +37,23 @@ class Sorted {
         return min;
     }
 
+    /**
+     * 传入点
+     * @param {number[]} v
+     */
     give(v) {
         this.data.push(v);
     }
+
+    /**
+     * 取长度
+     */
+    get length() {
+        return this.data.length;
+    }
 }
 
+// 构建地图和编辑器
 let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
 
 let container = document.getElementById('container');
@@ -70,27 +84,44 @@ let mousedown = false;
 let clear = false;
 document.addEventListener('mousedown', e => {
     mousedown = true;
-    clear = (e.which === 3);
+    // 可以用 e.which === 3， 但 which is no longer recommended，最好用 button
+    clear = (e.button === 2);
 });
 document.addEventListener('mouseup', () => mousedown = false)
 // 因为要使用右键，所以要阻止默认行为（弹出菜单）
 document.addEventListener('contextmenu', e => e.preventDefault());
 
+/**
+ * 延时
+ * @param {number} t millisecond
+ */
 function sleep(t) {
     return new Promise((resolve) => {
         setTimeout(resolve, t);
     })
 }
 
-/* 
-JS 的数组实现 queue 和 stack
-添加    unshift()           push()
-                [0, 1, 2, 3]
-删除    shift()             pop()
-*/
+/**
+ * Note 1: JS数组实现 queue 和 stack
+ * 添加    unshift()           push()
+ *                  [0, 1, 2, 3]
+ * 删除    shift()             pop()end 
+ */
+
+/**
+ * 找到最优路径
+ * @param {number[]} map 
+ * @param {number[]} start 
+ * @param {number[]} end 
+ */
 async function findPath(map, start, end) {
+    container.children[end[1] * 100 + end[0]].style.backgroundColor = 'red';
+
     // 队列，先进先出，实现广度优先搜索 (如果用stack的数据结构，可以实现深度优先搜索)
-    let queue = [start];
+    // let queue = [start];
+    // 用 Sorted 类管理队列
+    let queue = new Sorted([start], (a, b) => distance(a) - distance(b));
+
     // 平行做一个记录，记录当前节点的父节点 pre
     let table = Object.create(map);
 
@@ -99,14 +130,15 @@ async function findPath(map, start, end) {
         if (x < 0 || x >= 100 || y < 0 || y >= 100)
             return;
         // 如果给的点已经标记过(有墙,或者找到过)，不插入
+        // TODO: 继续优化回溯路径
         if (table[y * 100 + x])
             return;
 
         // 过程可视化
-        // await sleep(1);
+        await sleep(1);
         
         /**
-         * childNodes 和 children 的区别
+         * Note 2: childNodes 和 children 的区别
          * childNodes 返回所有节点，包括元素节点，文本节点，注释节点等
          * children 只返回元素节点
          */
@@ -114,15 +146,34 @@ async function findPath(map, start, end) {
 
         // 标记传入的点
         // 传入的点如果符合条件，就加入到queue里
-        queue.push([x, y]);
-
+        // queue.push([x, y]);
+        queue.give([x, y]);
+        
+        // 标记前驱点
+        // TODO: 继续优化回溯路径
         table[y * 100 + x] = pre;
+    }
+
+    /**
+     * 计算所给点到终点的距离
+     * -.-------
+     * | \
+     * |  \
+     * |___.
+     * |
+     * @param {number[]} point
+     */
+    function distance(point) {
+        // 因为只是用于比较，所以不用开根号了，节省资源
+        return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
     }
 
     // 如果queue不为空
     while(queue.length) {
         // 取出queue最前面的那个点，
-        let [x, y] = queue.shift();
+        // let [x, y] = queue.shift();
+        // 取出离终点最近的点
+        let [x, y] = queue.take();
         // 如果取出的点是 end，回溯 pre 记录，找到路径
         if (x === end[0] && y === end[1]) {
             let path = [];
