@@ -98,7 +98,123 @@ function* tokenize(source) {
     }
 }
 
+let source = [];
+
 // tokenize 是一个 generator 函数，所以 return 的是一个 iterator，可用 let of 调用
-for (let token of tokenize('1024 + 10 * 25')) {
+// for (let token of tokenize('10 * 25 / 2')) {
+for (let token of tokenize('1 + 2 + 3')) {
     console.log('token: ', token);
+    if(token.type !== 'Whitespace' && token.type !== 'LineTerminator') {
+        source.push(token);
+    }
 }
+
+// LL 语法分析，每一个产生式对应一个函数
+function Expression(tokens) {
+    if (source[0].type === 'AdditiveExpression' && source[1] && source[1].type === 'EOF') {
+        let node = {
+            type: 'Expression',
+            children: [ source.shift(), source.shift()],
+        };
+        source.unshift(node);
+        return node;
+    }
+    AdditiveExpression(source);
+    return Expression(source);
+}
+
+function AdditiveExpression(source) {
+    if(source[0].type === 'MultiplicativeExpression') {
+        let node = {
+            type: 'AdditiveExpression',
+            children: [source[0]],
+        };
+        source[0] = node;
+        return AdditiveExpression(source);
+    }
+
+    if(source[0].type === 'AdditiveExpression' && source[1] && source[1].type === '+') {
+        let node = {
+            type: 'AdditiveExpression',
+            operator: '+',
+            children: [],
+        };
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        // 第三项是非终结符，所以要调用 Multi
+        MultiplicativeExpression(source);
+        node.children.push(source.shift());
+        source.unshift(node);
+        return AdditiveExpression(source);
+    }
+
+    if(source[0].type === 'AdditiveExpression' && source[1] && source[1].type === '-') {
+        let node = {
+            type: 'AdditiveExpression',
+            operator: '-',
+            children: [],
+        };
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        // 第三项是非终结符，所以要调用 Multi
+        MultiplicativeExpression(source);
+        node.children.push(source.shift());
+        source.unshift(node);
+        return AdditiveExpression(source);
+    }
+
+    if(source[0].type === 'AdditiveExpression') {
+        return source[0];
+    }
+
+    // 如果第一个是 number， 或者 Multi 没有完整执行的话，先调用 Multi，因为 number 就是 Multi 的一种
+    MultiplicativeExpression(source);
+    return AdditiveExpression(source);
+}
+
+function MultiplicativeExpression(source) {
+    if(source[0].type === 'Number') {
+        let node = {
+            type: 'MultiplicativeExpression',
+            children: [source[0]],
+        }
+        source[0] = node;
+        return MultiplicativeExpression(source);
+    }
+
+    if(source[0].type === 'MultiplicativeExpression' && source[1] && source[1].type === '*') {
+        let node = {
+            type: 'MultiplicativeExpression',
+            operator: '*',
+            children: [],
+        }
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        source.unshift(node);
+        return MultiplicativeExpression(source);
+    }
+
+    if(source[0].type === 'MultiplicativeExpression' && source[1] && source[1].type === '/') {
+        let node = {
+            type: 'MultiplicativeExpression',
+            operator: '/',
+            children: [],
+        }
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        source.unshift(node);
+        return MultiplicativeExpression(source);
+    }
+    // 递归结束的条件
+    if(source[0].type === 'MultiplicativeExpression') {
+        return source[0];
+    }
+
+    return MultiplicativeExpression(source);
+}
+
+// console.log('MultiplicativeExpression(source): ', MultiplicativeExpression(source));
+// console.log('AdditiveExpression(source): ', AdditiveExpression(source));
+console.log('Expression(): ', Expression());
