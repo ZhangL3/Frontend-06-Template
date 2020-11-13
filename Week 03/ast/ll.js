@@ -6,27 +6,28 @@
  *      Operator: +, -, * / 之一
  *      Whitespace: <SP>
  *      LineTerminator: <LF><CR>
- *  语法定义(产生式)
+ *  语法定义(产生式) <<终结符>>
+ * 
  *      <Expression>::=
- *          <AddictiveExpression><EOF>
+ *          <AddictiveExpression><<EOF>>
  * 
  *      <AdditiveExpression>::=
  *          <MultiplicativeExpression>
- *          |<AdditiveExpression><+><MultiplicativeExpression>
- *          |<AdditiveExpression><-><MultiplicativeExpression>
+ *          |<AdditiveExpression><<+>><MultiplicativeExpression>
+ *          |<AdditiveExpression><<->><MultiplicativeExpression>
  * 
  *      <MultiplicativeExpression>::=
- *          <Number>
- *          |<MultiplicativeExpression><*><Number>
- *          |<MultiplicativeExpression></><Number>
+ *          <<Number>>
+ *          |<MultiplicativeExpression><<*>><<Number>>
+ *          |<MultiplicativeExpression><</>><<Number>>
  * 
  *                                  Expression
  *                                /            \
  *                              Add             EOF(End Of File)
- *                   /           |           \
- *               Multi          Add+Multi     Add-Multi
- *          /       |       \
- *        Num   Multi*Num   Multi/Num
+ *                       /       |       \
+ *                  Multi    Add + Multi  Add - Multi
+ *             /    |   \
+ *          Num  Multi * Num Multi / Num
  * 
  * 
  */
@@ -101,10 +102,10 @@ function* tokenize(source) {
 let source = [];
 
 // tokenize 是一个 generator 函数，所以 return 的是一个 iterator，可用 let of 调用
-// for (let token of tokenize('10 * 25 / 2')) {
-for (let token of tokenize('1 + 2 + 3')) {
-    console.log('token: ', token);
+for (let token of tokenize('10 * 25 / 2')) {
+// for (let token of tokenize('1 + 2 + 3')) {
     if(token.type !== 'Whitespace' && token.type !== 'LineTerminator') {
+        console.log('token: ', token);
         source.push(token);
     }
 }
