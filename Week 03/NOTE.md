@@ -24,6 +24,48 @@ I --> 前端： 词法分析，语法分析 -抽象语法树(AST)-> 后端: 指�
 
 #### 词法分析：正则表达式
 
+```js
+// ()为分组捕获，匹配到其中一个()内结果时，结束此次搜索
+let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+
+while(true) {
+        // 更新上一次找到的 index
+        lastIndex = regexp.lastIndex;
+        /**
+         * Note 1: exec()
+         * exec 可多次对同一字符串进行查找，下一次的查找会从正则自己的 lastIndex 属性开始
+         * 返回值为一个 类array 的 object
+         * result 中的属性：
+         * [0]: The full string of characters matched
+         * [1], ...[n]: The parenthesized substring matches, if any. 括号中的分组捕获
+         * index: The 0-based index of the match in the string.
+         * input: The original string that was matched against.
+         * 注意：即使 exec 换了另一个 string， lastIndex 也不会改变
+         * 
+         * result 的第一个值:
+         * {
+         *  0: '1024'
+         *  1: '1024'
+         *  2: undefined
+         *  3: undefined
+         *  4: undefined
+         *  5: undefined
+         *  6: undefined
+         *  7: undefined
+         *  groups: undefined
+         *  index: 0
+         *  input: '1024 + 10 * 25'
+         *  length: 8
+         * }
+         */
+        result = regexp.exec(source);
+
+        // 如果没有找到结果，跳出 while(true)
+        if(!result) break;
+        // 如果新找到的位置长于上次找到的位置，说明中间右不被识别的字符，跳出
+        if(regexp.lastIndex - lastIndex > result[0].length) break;
+```
+
 #### 语法分析：LL(1)
 
 从左(L)向右读入程序，最左(L)推导，采用一个(1)前看符号:
@@ -88,6 +130,9 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 
 每次递归都先检查栈顶，
 如果栈顶是 Number，把它包成 MultiplicativeExpression
+对应产生式
+    \<MultiplicativeExpression>::=
+        \<Number>
 
 ```js
 [
@@ -116,10 +161,13 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 ]
 ```
 
-如果栈顶是 MultiplicativeExpression，看下一位是否是 * 或者 / 号， 如果是，前三项则是一个完整的 MultiplicativeExpression，包在一起
+如果栈顶是 MultiplicativeExpression，看下一位是否是 \* 或者 / 号， 如果是，前三项则是一个完整的 MultiplicativeExpression，包在一起
+对应产生式
+    \<MultiplicativeExpression>::=
+        |\<MultiplicativeExpression><*>\<Number>
+        |\<MultiplicativeExpression></>\<Number>
 
 ```js
--->
 [
     // 栈顶
     {
@@ -144,7 +192,7 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
     },
     // 栈底
 ]
--->
+// 继续递归 MultiplicativeExpression -->
 [
     // 栈顶
     {
@@ -178,3 +226,170 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 ```
 
 如果栈顶是 MultiplicativeExpression，下一位是 EOF，也就是到了栈底，那这个 MultiplicativeExpression 就是最终结果。
+
+                    Expression
+                    /       \
+                Multi(/)       EOF
+            /     |     \
+        Multi(*)  /       2
+      /      | \
+    Multi(N) *  25
+        |
+        10
+
+例2. AdditiveExpression 1 + 2 * 5
+
+```js
+[
+    {
+        type: 'Number',
+        value: '1',
+    },
+    {
+        type: '+',
+        value: '+',
+    },
+    {
+        type: 'Number',
+        value: '2',
+    },
+    {
+        type: '*',
+        value: '*',
+    },
+    {
+        type: 'Number',
+        value: '5',
+    },
+    {
+        type: 'EOF',
+    }
+]
+```
+
+如果第一项既不是 Multi 也不是 Add，就应该是一个 Number，所以要先执行一次 MultiExpression()，把第一项包裹为 Multi
+
+```js
+[
+    {
+        type: 'MultiplicativeExpression',
+        children: { type: 'Number', value: '1'},
+    },
+    {
+        type: '+',
+        value: '+',
+    },
+    {
+        type: 'Number',
+        value: '2',
+    },
+    {
+        type: '*',
+        value: '*',
+    },
+    {
+        type: 'Number',
+        value: '5',
+    },
+    {
+        type: 'EOF',
+    }
+]
+```
+
+如果第一项是 Multi，则被包裹为 Add
+对应产生式
+\<AdditiveExpression>::= \<MultiplicativeExpression>
+
+```js
+[
+    {
+        type: 'AdditiveExpression',
+        children: [
+            type: 'Multi'
+            children: [{ type: 'Number', value: '1'},]
+        ],
+    },
+    {
+        type: '+',
+        value: '+',
+    },
+    {
+        type: 'Number',
+        value: '2',
+    },
+    {
+        type: '*',
+        value: '*',
+    },
+    {
+        type: 'Number',
+        value: '5',
+    },
+    {
+        type: 'EOF',
+    }
+]
+```
+
+如果第一项是 Add，第二项是 +/-，说明第三项不是 Multi 就是 Number。因为 Number 也是 Multi 的一种，所以处理完前两项后(把第一项和第二项加入 Add Node 的 Children 里)，要执行 MultiplicativeExpression()，处理第三项和它相关的 Multi, 在加入 Add Node 的children 里
+对应产生式
+\<AdditiveExpression>::=
+    \<AdditiveExpression><<+>>\<MultiplicativeExpression>
+    |\<AdditiveExpression><<->>\<MultiplicativeExpression>
+
+```js
+[
+    {
+        type: 'AdditiveExpression',
+        operator: '+',
+        children: [
+            {
+                type: 'Multi'
+                children: [{ type: 'Number', value: '1'},]
+            },
+            {
+                type: '+',
+                value: '+',
+            },
+            {
+                type: 'MultiplicativeExpression',
+                operator: '*'
+                children: [
+                    {
+                        type: 'MultiplicativeExpression',
+                        children: [ { type: 'Number', value: '2'}]
+                    },
+                    {
+                        type: '*',
+                        value: '*',
+                    },
+                    {
+                        type: 'Number',
+                        value: '5',
+                    }
+                ],
+            },
+        ],
+    },
+    {
+        type: 'EOF'
+    }
+]
+```
+
+如果第一项为 Add，第二项为 EOF，递归结束，包裹为 Expression
+
+                   Expression
+                    /       \
+                Add(+)       EOF
+            /    |      \
+          Add(M) +       Multi(*)
+         |              /    |   \
+      Multi(N)      Multi(N) *    5
+        |               |
+        1               2
+
+#### 表驱动的分析算法
+
+没弄明白，待续
