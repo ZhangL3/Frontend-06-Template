@@ -192,7 +192,11 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
     },
     // 栈底
 ]
-// 继续递归 MultiplicativeExpression -->
+```
+
+继续递归 MultiplicativeExpression -->
+
+```js
 [
     // 栈顶
     {
@@ -227,6 +231,19 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 
 如果栈顶是 MultiplicativeExpression，下一位是 EOF，也就是到了栈底，那这个 MultiplicativeExpression 就是最终结果。
 
+过程的树状图：
+
+---
+    Multi(N)
+        |
+        10  *   25  /   2   EOF
+---
+        Multi(*)
+      /      | \
+    Multi(N) *  25
+        |
+        10          /   2   EOF
+---
                     Expression
                     /       \
                 Multi(/)       EOF
@@ -236,7 +253,7 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
     Multi(N) *  25
         |
         10
-
+---
 例2. AdditiveExpression 1 + 2 * 5
 
 ```js
@@ -337,6 +354,7 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 \<AdditiveExpression>::=
     \<AdditiveExpression><<+>>\<MultiplicativeExpression>
     |\<AdditiveExpression><<->>\<MultiplicativeExpression>
+递归完第三项的 Multi 后，第一项为 Add，第二项为 EOF，递归结束，包裹为 Expression
 
 ```js
 [
@@ -378,7 +396,29 @@ L：在推导的过程当中，每次总是选择当前的串中，最左的非�
 ]
 ```
 
-如果第一项为 Add，第二项为 EOF，递归结束，包裹为 Expression
+过程的树状图：
+
+---
+      Multi(N)
+        |
+        1   +   2   *   5
+---
+      Add(M)
+        |
+      Multi(N)
+        |
+        1   +   2   *   5
+---
+
+                Add(+)
+            /    |      \
+          Add(M) +
+         |
+      Multi(N)      Multi(N)
+        |               |
+        1               2   *   5   EOF
+---
+
 
                    Expression
                     /       \
