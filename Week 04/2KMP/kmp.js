@@ -10,15 +10,21 @@ function kmp(source, pattern) {
             if (pattern[i] === pattern[j]) {
                 ++j, ++i;
                 table[i] = j;
-                
-            } else {
+            }
+            else {
                 if (j > 0) {
+                    // 如果有不匹配的地方，并且之前已经找到了匹配的字符
+                    // 把指针回溯到上一个公共前后缀
+                    console.log('j: ', j);
+                    console.log('before pattern[j]: ', pattern[j]);
                     j = table[j];
+                    console.log('after pattern[j]: ', pattern[j]);
+                    console.log('j: ', j);
                 } else {
                     ++i;
                 }
             }
-        } 
+        }
         // console.log('table: ', table);
     }
 
@@ -56,6 +62,6 @@ function kmp(source, pattern) {
 // a  a  b  a  a  a  c
 
 // console.log(kmp('abcdabcdabcex', 'abcdabce'));
-console.log(kmp('aabaabaacx', 'aabaacx'));
+console.log(kmp('aabaabaacx', 'aabaabaacx'));
 
 // leetcode 28
