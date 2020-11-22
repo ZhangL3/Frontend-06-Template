@@ -13,8 +13,9 @@ function kmp(source, pattern) {
             }
             else {
                 if (j > 0) {
-                    // 如果有不匹配的地方，并且之前已经找到了匹配的字符
-                    // 把指针回溯到上一个公共前后缀
+                    // 如果有不匹配的地方，并且之前已经找到了匹配的字符，既公共字符串
+                    // 把指针回溯到上一个公共字符串的后缀
+                    // 如果这个后缀可以匹配上，就可以从这个后缀继续，不用回溯到0了
                     console.log('j: ', j);
                     console.log('before pattern[j]: ', pattern[j]);
                     j = table[j];
