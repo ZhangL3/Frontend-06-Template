@@ -11,7 +11,7 @@ let object = {
 let po = reactive(object);
 
 /**
- * 对 obj 的 prop 注册函数
+ * 对 obj 的 prop 注册函数, 如果 prop 被更改，就会调用注册了的函数
  */
 effect(() => {
     // 这里的 po 调用可以触发 get 里的语句，把通过 Proxy 传递的 obj 和 prop 储存起来
