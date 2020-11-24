@@ -19,6 +19,10 @@ effect(() => {
     console.log('po.a: ', po.a);
 })
 
+effect(() => {
+    console.log('po.b: ', po.b);
+})
+
 /**
  * callbacks = [
  *    {
@@ -29,6 +33,7 @@ effect(() => {
  * @param {Function} callback 被注册的函数
  */
 function effect(callback) {
+    // 把原来的 usedReactivities 清空，这样就不会把新的 callback 加到原来的 reactivity 里了
     usedReactivities = [];
     // 执行 callback 的同时，触发 reactive (即proxy) 的 get 方法，把 [obj, prop] 放入 usedReactivities
     callback();
@@ -49,6 +54,8 @@ function effect(callback) {
         callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
 
     }
+
+    console.log('callbacks: ', callbacks);
     
     /* const callbacks = [
         {
