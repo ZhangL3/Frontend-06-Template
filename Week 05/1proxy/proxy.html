@@ -6,6 +6,135 @@
     <title>Document</title>
 </head>
 <body>
-    <script src="./proxy.js"></script>
+    <input type="range" id="r" min=0 max=255 >
+    <input type="range" id="g" min=0 max=255>
+    <input type="range" id="b" min=0 max=255>
+    <div id="color" style="width: 100px; height: 100px;">
+
+    </div>
+    <!-- <script src="./proxy.js"></script> -->
+    <script>
+        let callbacks = new Map();
+
+        // 存储已经添加的 reactivities，作为跳出递归的条件
+        let reactivities = new Map();
+
+        // 储存被调用了哪个变量 [{obj}, prop][]
+        let usedReactivities = [];
+
+        let object = {
+            r: 1,
+            g: 1,
+            b: 1,
+        };
+
+        // 先在 reactive 里注册针对 object 的 proxy
+        let po = reactive(object);
+
+        /**
+         * 对 obj 的 prop 注册函数, 如果 prop 被更改，就会调用注册了的函数
+         */
+        effect(() => {
+            document.getElementById('r').value = po.r;
+        })
+        effect(() => {
+            document.getElementById('g').value = po.g;
+        })
+        effect(() => {
+            document.getElementById('b').value = po.b;
+        })
+
+        document.getElementById('r').addEventListener('input', event => po.r = event.target.value);
+        document.getElementById('g').addEventListener('input', event => po.g = event.target.value);
+        document.getElementById('b').addEventListener('input', event => po.b = event.target.value);
+
+        effect(() => {
+            document.getElementById('color').style.backgroundColor = `rgb(${po.r}, ${po.g}, ${po.b})`;
+        })
+
+        /**
+         * callbacks = [
+         *    {
+         *       obj => { prop => [callback]}
+         *    }
+         * ]
+         * 
+         * @param {Function} callback 被注册的函数
+         */
+        function effect(callback) {
+            // 把原来的 usedReactivities 清空，这样就不会把新的 callback 加到原来的 reactivity 里了
+            usedReactivities = [];
+            // 因为在调用 reactive 创建 po 的时候，已经注册了针对 object 的 proxy，
+            // 所以在执行 callback 的同时，会触发 proxy 的 get 方法，
+            // 把 [obj, prop] 存入 usedReactivities
+            callback();
+
+            // 利用 usedReactivities 整理出 callbacks，相当于用 obj 和 prop 对 callback 做一个索引
+            for (let reactivity of usedReactivities) {
+                // 防止空的情况
+                // 第一层，添加 [{obj}, prop] 中的 {obj}
+                if (!callbacks.has(reactivity[0])) {
+                    callbacks.set(reactivity[0], new Map());
+                }
+                // 第二层，添加 [{obj}, prop] 中的 prop
+                if (!callbacks.get(reactivity[0]).has(reactivity[1])) {
+                    callbacks.get(reactivity[0]).set(reactivity[1], []);
+                }
+
+                // 把 callback 插入对应的两层 key 的 callback[] 里
+                callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
+
+            }
+        }
+
+        /**
+         * get 时提供 [obj, prop]
+         * set 时依次调用 { obj => prop => callbacks } 里的 callbacks
+         * 优化后的 set: { obj => {obj => prop}} 
+         * @param {object} object obj to pass to proxy
+         */
+        function reactive(object) {
+            if (reactivities.has(object)) {
+                return reactivities.get(object);
+            }
+
+            let proxy = new Proxy(object, {
+                    // 更改 object 的属性的值的时候，如果 callbacks 中有存了关于这个 object 的这个属性的回调函数，
+                    // 这些回调函数会被执行
+                    set(obj, prop, val) {
+                        obj[prop] = val;
+                        // 调用对应 callbacks
+                        if(callbacks.get(obj)) {
+                            if(callbacks.get(obj).get(prop)) {
+                                for( let callback of callbacks.get(obj).get(prop)) {
+                                    callback();
+                                }
+                            }
+                        }
+
+                        return obj[prop];
+                    },
+
+                    // get obj 的 prop 时，obj 和 prop 会作为 array 对儿被存入 usedReactivities
+                    // set 的时候，也要先一层层 get，到 set 目标层是，set val， 然后再 get 一遍
+                    get(obj, prop) {
+                        // 通过 Proxy 得到调用时传递的 obj 和 prop，储存起来
+                        usedReactivities.push([obj, prop]);
+                        // 如果 prop 是 Object，继续迭代到下一层,把下一层的 obj 注册位 proxy
+                        if (typeof obj[prop] === 'object') {
+                            return reactive(obj[prop]);
+                        }
+
+                        return obj[prop];
+                    }
+                }
+            )
+
+            // 在全局 reactivities 里标记已经存在的 proxy
+            reactivities.set(object, proxy);
+
+            return proxy;
+        }
+    </script>
 </body>
 </html>
