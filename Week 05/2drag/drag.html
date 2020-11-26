@@ -10,25 +10,28 @@
     <script>
         let dragable = document.getElementById('dragable');
 
+        // 记录拖拽的终止位置
         let baseX = 0, baseY = 0;
 
         dragable.addEventListener('mousedown', (event) => {
 
+            // 记录鼠标按下的位置
             let startX = event.clientX, startY = event.clientY;
 
             let up = event => {
                 baseX = baseX + event.clientX - startX;
                 baseY = baseY + event.clientY - startY;
-                console.log('baseX: ', baseX);
-                console.log('baseY: ', baseY);
+
                 document.removeEventListener('mousemove', move);
                 document.removeEventListener('mouseup', up)
             };
 
             let move = event => {
+                // 计算出移动位置
                 dragable.style.transform = `translate(${baseX + event.clientX - startX}px, ${baseY + event.clientY - startY}px)`;
             };
 
+            // 注册在 document 上，以免鼠标滑出 div 后失效
             document.addEventListener('mousemove', move);
             document.addEventListener('mouseup', up)
         })
