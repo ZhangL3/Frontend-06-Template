@@ -172,3 +172,25 @@ effect(() => {
     document.getElementById('color').style.backgroundColor = `rgb(${po.r}, ${po.g}, ${po.b})`;
 })
 ```
+
+## drag
+
+### 编程思想
+
+在 text 中插入 range 节点，根据鼠标的位置，插入 drageble 的 div 到对应的 range
+
+### 语法点
+
+Node.textContent: 表示一个节点及其后代的文本内容。
+1. VS HTMLElement.innerText 
+1.1 textContent 会获取所有元素的内容，包括\<script> 和 \<style> 元素(所以textContent.length 并不是可见区域的长度); innerText 只展示给人看的元素。
+1.2 textContent 会返回节点中的每一个元素; innerText 受 CSS 样式的影响，并且不会返回隐藏元素的文本
+2. VS Element.innerHTML
+2.1  Element.innerHTML 返回 HTML。通常，为了在元素中检索或写入文本，人们使用 innerHTML。但是，textContent 通常具有更好的性能，因为文本不会被解析为HTML。
+2.2 使用 textContent 可以防止 XSS 攻击。
+
+Range: 表示一个包含节点与文本节点的一部分的文档片段。就是 Node 的集合
+1. 方法
+1.1 Document.createRange
+1.2 Range.setStart 标记 Range 开始的节点
+1.3 Range.setEnd 标记 Range 结束的节点
