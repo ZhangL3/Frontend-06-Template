@@ -67,6 +67,7 @@ effect(() => {
 })
  */
 /**
+ * 注册函数
  * callbacks = [
  *    {
  *       obj => { prop => [callback]}
@@ -122,6 +123,7 @@ function effect(callback) {
  * @param {object} object obj to pass to proxy
  */
 function reactive(object) {
+    // 迭代的终止条件
     if (reactivities.has(object)) {
         return reactivities.get(object);
     }
