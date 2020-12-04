@@ -96,3 +96,22 @@ minifloat (8 bit) 为例作为理解
     * }abc${
         
     * }abc`
+
+    ## Object
+
+    ### Definition
+
+        Object
+        /   |   \
+        identifier state    behavior
+
+    ### Description
+    
+    #### Class
+
+    归类：多继承
+    分类：单继承
+
+    #### Prototype
+
+    
