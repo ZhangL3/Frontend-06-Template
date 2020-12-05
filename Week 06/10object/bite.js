@@ -9,24 +9,28 @@ class Dog extends Animal {
     super(name);
   }
 
-  bite(sth) {
-    console.log('sth: ', sth);
-    sth.health = false;
+  bite() {
+    return 'bite';
   }
 }
 
 class Human extends Animal {
-  health;
+  damage;
 
   constructor(name) {
     super(name);
-    this.health = true;
+    this.damage = '';
+  }
+
+  hurt(damage) {
+    this.damage = damage;
   }
 }
 
 const dogi = new Dog('dogi');
 console.log('dogi: ', dogi);
 const man = new Human('man');
+
+man.hurt(dogi.bite());
 console.log('man: ', man);
 
-dogi.bite(man);
