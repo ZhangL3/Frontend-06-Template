@@ -1,0 +1,7 @@
+形式语言-用途
+数据描述语言：JSON, HTML, CSS, XML, SQL
+编程语言：JS, Python, Java, C, C++, Go, Dart, Haskell, Lisp, Kotlin
+
+形式语言-表达方式
+声明式语言： JSON, HTML, CSS, XML, Haskell, Lisp
+命令式语言：C, C++, JS, Python, Java, Kotlin, Go

@@ -1,5 +1,29 @@
 # 学习笔记 Week 6
 
+## 一般命令式编程语言的设计方式
+
+1. Atom
+1.1 Indentifier
+1.2 Literal
+2. Exrpession
+2.1 Atom
+2.2 Operator
+2.3 Puncutator
+3. Statement
+3.1 Expression
+3.2 Keyword
+3.3 Punctuator
+4. Structure
+4.1 Function
+4.2 Class
+4.3 Process
+4.4 Namespace
+5. Program
+5.1 Program
+5.2 Module
+5.3 Package
+5.4 Library
+
 ## Number
 
 ### 运行时
@@ -244,7 +268,3 @@ type of function // funktion
 规范中没有规定的对象，但在环境中(browser, node)定义了的
 
 Object [[call]] [[construct]]
-
-
-
-    
