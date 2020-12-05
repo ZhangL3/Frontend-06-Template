@@ -97,25 +97,85 @@ minifloat (8 bit) 为例作为理解
         
     * }abc`
 
-    ## Object
+## Object
 
-    ### Definition
+### Definition
 
-        Object
-        /   |   \
-        identifier state    behavior
+    Object
+    /   |   \
+    identifier state    behavior
 
-    ### Description
+### Description
+
+#### Class
+
+归类：多继承
+分类：单继承
+
+#### Prototype
+
+### 设计原则
+
+在设计对象的状态和行为时，我们总是遵循“行为改变状态”的原则
+
+### 原型链
+
+JS 对象里有属性和 prototype。
+
+行为（函数）可以作为属性被定义，所以被归类在属性里。
+
+如果在自己的属性里找不到某个属性，就会向上层 [[prototype]] 里查找，直到 nihilo (null)
+
+### 属性
+
+key value 对。
+
+key 可以是 String 或者 Symbol。可以通过 Symbol 控制属性的访问权限
+
+value 有两种， Data Property 和 Accessor Property
+
+Data Property 的 attributes: [[value]], writable, enumerable, configuarable.
+
+Accessor Property 的 attributes: get, set, enumerable, configuarable.
+
+property 的 attributes 可通过 defineProperty 更改
+
+### API / Grammer
+
+1. 基本的对象机制：创建对象，访问属性，定义新属性, 改变属性特征值(attributes)
     
-    #### Class
+    {} / . / [] / Object.defineProperty
 
-    归类：多继承
-    分类：单继承
+2. 基于 Prototy 描述对象的方法
 
-    #### Prototype
+    Object.create / Object.setPrototypeOf /Object.getPrototypeOf
 
-    ### 设计原则
+3. 基于分类的方式去描述对象 (区别于归类) ，运行时会被转换为基于 prototype 的对象
 
-    在设计对象的状态和行为时，我们总是遵循“行为改变状态”的原则
+    new / class / extends
+
+4. 历史包袱，建议不用
+
+    new / function / proptotype
+
+### Function Object (Object [[call]])
+
+type of function // funktion
+
+带 call 方法的 object, [[]] 标注的为对象内置行为，通过任何 JS 代码都无法访问
+
+### Special Object
+
+* Array [[length]
+* Object.prototype [[setPrototypeOf]]
+* ...
+
+### Host Object (window, global)
+
+规范中没有规定的对象，但在环境中(browser, node)定义了的
+
+Object [[call]] [[construct]]
+
+
 
     
