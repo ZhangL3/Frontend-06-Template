@@ -51,7 +51,8 @@ minifloat (8 bit) 为例作为理解
 
 ### 语法
 
-因为 0.2 === .2
+因为 0.2 === .2,
+
 0.toString() 会报错，以为 .toString() 会被当作小数部分处理，正确写法为 0. toString()
 
 ## String
@@ -127,16 +128,26 @@ minifloat (8 bit) 为例作为理解
             /   |   \
     identifier state behavior
 
-### Description
+### Description 面向对象的不同描述
 
-#### Class
+#### Class 类
+
+Class 是核心，可以理解为 面向类
+
+constance 是类实例化的结果，具象继承自抽象
 
 归类：多继承
-分类：单继承
+分类：单继承（Java）
 
-#### Prototype
+#### Prototype 原型
 
-原型链
+Prototype pattern refers to creating duplicate object while keeping performance in mind. This type of design pattern comes under creational pattern as this pattern provides one of the best ways to create an object.
+
+This pattern involves implementing a prototype interface which tells to create a clone of the current object. This pattern is used when creation of object directly is costly.
+
+万物皆对象。JS 中，类也只是一个有 constructor 函数的 object。
+
+通过克隆别的对象得到新的对象，constance 也可以是通过克隆别的 constance 得到，不用实例化类。
 
 ### 设计原则 SOLID
 
@@ -204,7 +215,7 @@ property 的 attributes 可通过 defineProperty 更改
     
     {} / . / [] / Object.defineProperty
 
-2. 基于 Prototy 描述对象的方法
+2. 基于 Prototype 描述对象的方法
 
     Object.create / Object.setPrototypeOf /Object.getPrototypeOf
 
