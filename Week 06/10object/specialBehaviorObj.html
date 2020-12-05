@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Object with special behavior</title>
+</head>
+<body>
+  <h3>
+    重学前端 专栏里 你知道对象全部分类吗？ 章节里总结的有特殊行为的对象
+  </h3>
+  <p>
+    共性： 下标运算或者设置原型和普通对象不同
+  </p>
+  <p>
+    <ol>
+      <li>
+        Array: Array 的 length 属性根据最大的下标自动发生变化。
+      </li>
+      <li>
+        Object.prototype: 作为所有正常对象的默认原型，不能再给它设置原型了。
+      </li>
+      <li>
+        String: 为了支持下标运算，String 的正整数属性访问回去字符串里查找。
+      </li>
+      <li>
+        Arguments: arguments 的非负整数型下标属性跟对应的变量联动。
+      </li>
+      <li>
+        模块的 namespace 对象：特殊的地方非常多，跟一般对象完全不一样，尽量只用于 import 吧。
+      </li>
+      <li>
+        类型数组和数组缓冲区：跟内存快相关联，下标运算比较特殊。
+      </li>
+      <li>
+        bind 后 function： 跟原来的函数相关联
+      </li>
+    </ol>
+  </p>
+</body>
+</html>
