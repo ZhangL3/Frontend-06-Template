@@ -1,6 +1,16 @@
 # 学习笔记 Week 6
 
-## 一般命令式编程语言的设计方式
+## 编程语言
+
+### 乔姆斯基谱系
+
+1. 0型文法（无限制文法或短语结构文法）包括所有的文法。
+2. 1型文法（上下文相关文法）生成上下文相关语言。
+3. 2型文法（上下文无关文法）生成上下文无关语言。
+4. 3型文法（正规文法）生成正则语言。
+4层之间的关系：上层包含下层
+
+### 一般命令式编程语言的设计方式
 
 1. Atom
 1.1 Indentifier
@@ -24,9 +34,11 @@
 5.3 Package
 5.4 Library
 
-## Number
+## JS基本类型
 
-### 运行时
+### Number
+
+#### 运行时
 
 JS 中的 Number 是 double float (IEEE 754)
 64 bit = 1 sign + 11 exponent + 52 fraction
@@ -73,15 +85,15 @@ minifloat (8 bit) 为例作为理解
 
 => \- 0.6875
 
-### 语法
+#### 语法
 
 因为 0.2 === .2,
 
 0.toString() 会报错，以为 .toString() 会被当作小数部分处理，正确写法为 0. toString()
 
-## String
+### String
 
-### 运行时
+#### 运行时
 
 1. Character
 
@@ -95,7 +107,7 @@ minifloat (8 bit) 为例作为理解
 
     ASCII (0 - 127) -> Unicode (000 - FFF)
 
-    #### UTF-8 & UTF-16
+    UTF-8 & UTF-16
 
     中文 "一" 的 UTF-16 编码为 11100100 10111000 10000000
 
@@ -104,12 +116,12 @@ minifloat (8 bit) 为例作为理解
     |**1**|**1**|**1**|**0**|0|1|0|0||**1**|**0**|1|1|1|0|0|0||**1**|**0**|0|0|0|0|0|0|
 
     **i** 为标识符，第一个 byte 里的 **1** **1** **1** **0** 表示这个字符占了 3 个 byte，算上自己，还包括后面两个
-    
+
     **c** 为 code 的值
 
-### 语法
+#### 语法
 
-#### ' & "
+##### ' & "
 
 * 双引号里可以包单引号，单引号里也可以包双引号。
 
@@ -134,27 +146,27 @@ minifloat (8 bit) 为例作为理解
 
     \x 之后跟2位十六进制数。取值范围：\x00 到 \xff
 
-### `
+#### `
 
 实际上被分为三组字面量
 
 * `ab${
 
 * }abc${
-    
+
 * }abc`
 
-## Object
+### Object
 
-### Definition
+#### Definition
 
              Object
             /   |   \
     identifier state behavior
 
-### Description 面向对象的不同描述
+#### Description 面向对象的不同描述
 
-#### Class 类
+##### Class 类
 
 Class 是核心，可以理解为 面向类
 
@@ -163,7 +175,7 @@ constance 是类实例化的结果，具象继承自抽象
 归类：多继承
 分类：单继承（Java）
 
-#### Prototype 原型
+##### Prototype 原型
 
 Prototype pattern refers to creating duplicate object while keeping performance in mind. This type of design pattern comes under creational pattern as this pattern provides one of the best ways to create an object.
 
@@ -173,12 +185,12 @@ This pattern involves implementing a prototype interface which tells to create a
 
 通过克隆别的对象得到新的对象，constance 也可以是通过克隆别的 constance 得到，不用实例化类。
 
-### 设计原则 SOLID
+#### 设计原则 SOLID
 
 在设计对象的状态和行为时，我们总是遵循“行为改变状态”的原则。
 
 1. 开闭原则 Open Closed Principle
-    
+
     * 对扩展开放 -- 模块的行为可以被扩展从而满足新的需求
     * 对修改关闭 -- 不允许修改模块的源代码
 
@@ -211,15 +223,15 @@ This pattern involves implementing a prototype interface which tells to create a
 
     * 组合/聚合 和 继承 是实现复用的两个基本途径。合成复用原则是指尽量使用组合/聚合，而不是使用继承。
 
-### 原型链
+#### 原型链
 
 JS 对象里有属性和 prototype。
 
 行为（函数）可以作为属性被定义，所以被归类在属性里。
 
-如果在自己的属性里找不到某个属性，就会向上层 [[prototype]] 里查找，直到 nihilo (null)
+如果在自己的属性里找不到某个属性，就会向上层 \[[prototype]] 里查找，直到 nihilo (null)
 
-### 属性
+#### 属性
 
 key value 对。
 
@@ -227,16 +239,16 @@ key 可以是 String 或者 Symbol。可以通过 Symbol 控制属性的访问�
 
 value 有两种， Data Property 和 Accessor Property
 
-Data Property 的 attributes: [[value]], writable, enumerable, configuarable.
+Data Property 的 attributes: \[[value]], writable, enumerable, configuarable.
 
 Accessor Property 的 attributes: get, set, enumerable, configuarable.
 
 property 的 attributes 可通过 defineProperty 更改
 
-### API / Grammer
+#### API / Grammer
 
 1. 基本的对象机制：创建对象，访问属性，定义新属性, 改变属性特征值(attributes)
-    
+
     {} / . / [] / Object.defineProperty
 
 2. 基于 Prototype 描述对象的方法
@@ -251,20 +263,20 @@ property 的 attributes 可通过 defineProperty 更改
 
     new / function / proptotype
 
-### Function Object (Object [[call]])
+#### Function Object (Object \[[call]])
 
 type of function // funktion
 
-带 call 方法的 object, [[]] 标注的为对象内置行为，通过任何 JS 代码都无法访问
+带 call 方法的 object, \[[]] 标注的为对象内置行为，通过任何 JS 代码都无法访问
 
-### Special Object
+#### Special Object
 
-* Array [[length]
-* Object.prototype [[setPrototypeOf]]
+* Array \[[length]
+* Object.prototype \[[setPrototypeOf]]
 * ...
 
-### Host Object (window, global)
+#### Host Object (window, global)
 
 规范中没有规定的对象，但在环境中(browser, node)定义了的
 
-Object [[call]] [[construct]]
+Object \[[call]] \[[construct]]
