@@ -125,3 +125,55 @@ Example:
 * a + b = c a+b 是 RH，只能放在 = 右边
 
 LH 定义就是能放在等号左边的表达式，不能的就是 RH
+
+## Runtime
+
+### Type Convertion
+
+* a + b
+* "false" == false (不等，"" 是 falsy) == 一般先被转为 Number，再转 boolean
+* a[o] = 1
+
+| | Number | String | Boolean | Undefined | Null | Object | Symbol |
+|-|-|-|-|-|-|-|-|
+| Number | | | 0 false | x | x | Boxing | x |
+| String | | | "" false | x | x | Boxing | x |
+| Boolean | true 1, false 0 | 'true', 'false' | | x | x | Boxing | x |
+| Undefined | NaN | 'undefined' | false | | x | x | x |
+| Null | 0 | 'null' | false | x | | x | x |
+| Object | valueOf | valueOf, toString | true | x | x | | x |
+| Symbol | x | x | x | x | x | Boxing | |
+
+#### unBoxing
+
+* ToPremtitive
+  * toString vs valueOf
+  * Symbol.toPrimitive
+
+```js
+    toString() { return '2' },
+    valueOf() { return 1 },
+    \[ Symbol.toPrimitive ]() { return 3} (优先级最高)
+
+    // 作为属性名，优先调用 toString
+    var x = {};
+    x[o] = 1
+
+    // 加法优先调用 valueOf
+    console.log("x" + o)
+```
+
+#### Boxing
+
+| 类型 | 对象 | 值 |
+|-|-|-|-|
+| Number | new Number(1) | 1 |
+| String | new String('a') | 'a' |
+| Boolean | new Boolean(true) | true |
+| Symbol | new Object(Symbol('a')) | Symbol('a') |
+
+```js
+'a'[b] // 'a' 被取属性 b，会自动调用装箱(Boxing)构造器
+```
+
+Number Class 上定义的值和 number 值不同，可通过 typeOf 查看
