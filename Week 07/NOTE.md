@@ -11,18 +11,27 @@ JS语言结构
       * Reference
 * Expression
 * Statement
+  * Grammer
+    * 简单语句
+    * 组合语句
+    * 声明
+  * Runtime
+    * Completion Record
+    * Lexical Environment
 * Structure
 * Program / Module
 
-## Grammer
+## Expression
 
-### Tree VS Priority
+### Grammer
+
+#### Tree VS Priority
 
 * \+ -
 * \* /
 * ()
 
-### Expressions (优先级最末的一个结构)
+#### Expressions (优先级最末的一个结构)
 
 优先级从高到底排列：
 
@@ -104,7 +113,7 @@ JS语言结构
 14. Conditional (也有短路逻辑)
     * ? :
 
-#### Reference (Reference 是标准中的类型，7种基本类型是语言中的类型)
+##### Reference (Reference 是标准中的类型，7种基本类型是语言中的类型)
 
 reference 分成两部分
 
@@ -112,12 +121,12 @@ reference 分成两部分
 * Key (String | Symbol)
 
 如果是加减法运算，reference 就会直接解引用，像普通变量取使用
-当删除和赋值时要知道主体是谁，时哪个属性
+当删除和赋值时要知道主体是谁，是哪个属性
 
 * delete
 * assign
 
-#### Expressions (Left Handside & Right Handside)
+##### Expressions (Left Handside & Right Handside)
 
 Example:
 
@@ -126,9 +135,9 @@ Example:
 
 LH 定义就是能放在等号左边的表达式，不能的就是 RH
 
-## Runtime
+### Runtime
 
-### Type Convertion
+#### Type Convertion
 
 * a + b
 * "false" == false (不等，"" 是 falsy) == 一般先被转为 Number，再转 boolean
@@ -144,7 +153,7 @@ LH 定义就是能放在等号左边的表达式，不能的就是 RH
 | Object | valueOf | valueOf, toString | true | x | x | | x |
 | Symbol | x | x | x | x | x | Boxing | |
 
-#### unBoxing
+##### unBoxing
 
 * ToPremtitive
   * toString vs valueOf
@@ -163,7 +172,7 @@ LH 定义就是能放在等号左边的表达式，不能的就是 RH
     console.log("x" + o)
 ```
 
-#### Boxing
+##### Boxing
 
 | 类型 | 对象 | 值 |
 |-|-|-|-|
