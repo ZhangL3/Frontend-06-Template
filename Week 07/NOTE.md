@@ -352,3 +352,170 @@ console.log(a);
 // const/let 的作用域就在所在的{}
 // 在循环语句中的范围是整个循环语句
 ```
+
+### Structure
+
+#### JS执行粒度 （运行时）
+
+* 宏任务 传给 JS 引擎的任务，最大粒度
+* 微任务 (Promise) 在 JS 引擎内部的任务
+* 函数调用 (Execution Context)
+* 语句/声明 (Completion Record)
+* 表达式 (Reference)
+* 直接量/变量/this ...
+
+##### 宏任务与微任务
+
+---
+MacroTask
+
+```js
+var x = 1;
+var p = new Promise(resolve => resovle());
+p.then(() => x = 3);
+x = 2;
+```
+
+--> JS Engine
+
+--> 两个 MicroTask(Job)
+
+```js
+// MicroTask 1
+x = 1
+p = ...
+x = 2
+```
+
+```js
+// MicroTask 2
+x = 3
+```
+
+--> 3
+
+---
+
+##### 事件循环 (event loop)
+
+```js
+    wait -> get code
+      /\       / 
+       \      \/
+        execute
+```
+
+##### 函数调用
+
+---
+
+```js
+import { foo } from "foo.js";
+var i = 0;
+console.log(i);
+foo();
+console.log(i);
+i++;
+```
+
+```js
+function foo() {
+  console.log(i);
+}
+export();
+```
+
+i 访问的是一个吗？ 否！
+
+-->
+
+```js
+var i = 0;
+console.log(i);
+console.log(i); // 只有这行没法访问 i
+console.log(i);
+i++;
+```
+
+---
+
+```js
+import { foo } from "foo.js";
+var i = 0;
+console.log(i);
+foo();
+console.log(i);
+i++;
+```
+
+```js
+import { foo2 } from "foo2.js";
+var x = 1;
+function foo() {
+  console.log(x);
+  foo2();
+  console.log(x);
+}
+export foo;
+```
+
+```js
+var y = 2;
+function foo2() {
+  console.log(y);
+}
+export foo2;
+```
+
+-->
+
+```js
+var i = 0;
+console.log(i);
+                console.log(x); // 可以访问 x
+                                console.log(y); // 可以访问 y
+                console.log(x); // 可以访问 x
+console.log(i);
+i++;
+
+// 栈式调用关系，stack 数据结构
+```
+
+```js
+//                                        栈顶元素 Running Execution Context
+// Execution Context   Execution Context   Execution Context
+//         i:0                 x:1                 y:2
+// =========================================================>
+//                  Execution Context Stack
+
+// 代码需要的一切信息都从 Running Execution Context 取回来
+```
+
+###### Execution Context
+
+```js
+/* 
+i:0 = [
+  code evaluation state, (用于 async 和 generator 函数，保存代码执行到哪的信息)
+  Function,
+  Script or Module,
+  Generator, (每次 Generator 函数执行后隐藏在背后的 Generator)
+  Realm, (保存所有内置对象的领域)
+  LexicalEnvironment, (执行代码中所需要的环境，保存变量 let const)
+  VariableEnvironment, (执行代码中所需要的环境，保存变量 var)
+]
+*/
+```
+
+* LexicalEnvironment
+  * this
+  * new.target
+  * super
+  * 变量
+
+  ```js
+  this.a = 1;
+  super();
+  x += 2;
+  new.target
+  ```
