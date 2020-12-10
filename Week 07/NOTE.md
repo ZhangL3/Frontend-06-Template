@@ -21,7 +21,7 @@ JS语言结构
 * Structure
 * Program / Module
 
-## Expression
+## Atom & Expression
 
 ### Grammer
 
@@ -186,3 +186,169 @@ LH 定义就是能放在等号左边的表达式，不能的就是 RH
 ```
 
 Number Class 上定义的值和 number 值不同，可通过 typeOf 查看
+
+## Statement
+
+### Grammer
+
+#### 简单语句
+
+* ExpressionStatement (表达式;)
+* EmptyStatement (为了语言完备性, 空;)
+* DebuggerStatement (debugger)
+* ThrowStatement (抛出异常 throw expression)
+* ContinueStatement (结束当次循环)
+* BreakStatement (结束整个循环)
+* ReturnStetment (返回函数值)
+
+#### 复合语句
+
+* BlockStatement ({})
+* IfStatement
+* SwitchStatement (JS 里没有性能优势，建议用 IfStatement 代替)
+* IterationStatement (while, do while, for...)
+* WithStatement (不确定性高，不要使用)
+* LabelledStatement (给语句取名字, 可以在任何地方用)
+* TrySatement (try, catch, finally)
+
+##### BlockStatement
+
+* \[[type]]: normal
+* \[[value]]: --
+* \[[target]]: --
+
+##### IterationStatement
+
+```js
+while(xxx) zzz
+do xxx while(xxx);
+for(yyy; xxx; xxx) zzz
+for(yyy in xxx) zzz
+for(yyy of xxx) zzz
+for await(of) // 不建议用
+  //yyy 位置可以用 const/let 声明变量，但作用域不是 xxx, 而是外层的 zzz
+```
+
+##### LabelledStatement, IterationStatement, ContinueStatement, BreakStatement, SwitchStatement
+
+* \[[type]]: break continue
+* \[[value]]: --
+* \[[target]]: label
+
+##### TryStatement
+
+```js
+try {
+  xxx
+} catch (yyy) {
+  xxx
+} finally {
+  xxx
+}
+// yyy 是一个作用域，接收抛出的错误
+// 即使在 try 里 return 了， finally 也会执行
+```
+
+* \[[type]]: return
+* \[[value]]: --
+* \[[target]]: label
+
+###### Complation Record 类型 （不在基本类型里）
+
+```js
+if (x == 1)
+  return 10;
+// 有 return，也肯能没 return
+// 需要一个数据结果来描述语句的执行结果：是否返回了？ 返回值是啥？ 等等。。。
+```
+
+* \[[type]]: normal, break, continue, return or throw
+* \[[value]]: 基本类型
+* \[[target]]: label (break, continue 就会带 target，指向下一个循环层的 label)
+
+#### 声明 (winter 分法和 JS 的标准不完全一致)
+
+* FunctionDeclaration
+* GeneratorDeclaration
+* AsyncFunctionDeclaration
+* AsyncGeneratorDeclaration
+* VariableDeclaration
+* CalssDeclaration
+* LexicalDeclaration (const, let)
+
+##### 旧的声明
+
+* function
+* function *
+* async function
+* async function *
+* var
+
+function 作用范围只认 function body, 而且没有先后关系，会被提升
+var 声明会被提升，但不会被赋值
+
+##### 新的声明
+
+* class
+* const
+* let
+
+有预处理，但是声明之前引用会报错
+
+###### 预处理 (pre-process)
+
+```js
+var a = 2;
+void function () {
+  a = 1;
+  return;
+  var a;
+}()
+console.log(a); // 2
+// 相当于
+var a = 2;
+void function () {
+  var a;
+  a = 1;
+  return;
+}();
+// 所以 function 里的 a 可以找到自己作用域内的 a，不会去到外面找了
+```
+
+```js
+var a = 2;
+void function() {
+  a = 1;
+  return;
+  const;
+}();
+console.log(a); // 2
+// 会报错，但是 const 还是被预处理提前作为局部变量声明了
+```
+
+###### 作用域
+
+```js
+var a = 2;
+void function () {
+  a = 1;
+  {
+    var a;
+  }
+}();
+console.log(a);
+// var 的作用范围是整个函数体，不论写在哪
+```
+
+```js
+var a = 2;
+void function () {
+  a = 1;
+  {
+    const a;
+  }
+}();
+console.log(a);
+// const/let 的作用域就在所在的{}
+// 在循环语句中的范围是整个循环语句
+```
