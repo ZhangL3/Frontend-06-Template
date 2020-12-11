@@ -519,3 +519,95 @@ i:0 = [
   x += 2;
   new.target
   ```
+
+* VariableEnvironment
+  * 历史包袱，仅用于处理 var (预处理, eval里的不会预处理)
+
+  ```js
+  {
+    let y = 2;
+    eval('var x = 1');
+  }
+
+  with({a:1}{ // 穿到外层执行
+    eval('val x;');
+  })
+
+  console.log(x);
+  ```
+
+* Environment Record
+
+```js
+Environment Records = {
+  DeclartivateER: {
+    FunctionER: {},
+    moduleER: {},
+  },
+  GlobalER: {},
+  ObjectER: {},
+}
+```
+
+* Function - Closure
+JS 里每一个函数都会生成闭包
+
+```js
+var y = 2;
+function foo2() {
+  console.log(y);
+}
+
+export foo2;
+```
+
+```js
+/*
+每个函数会带一个它被定义时所在的 Environment Records，
+并保存到自己的函数对象身上，变成一个属性。
+
+  --------------------------
+  Function: foo2
+    -----------------------
+    | Environment Record: |
+    |       y: 2          |
+    -----------------------
+    -----------------------
+    |       Code:         |
+    |   console.log(y)    |
+    -----------------------
+  --------------------------
+*/
+```
+
+```js
+var y = 2;
+function foo2() {
+  var z = 3
+  return () => {
+    console.log(y, z);
+  }
+}
+var foo3 = foo2();
+export foo3;
+```
+
+```js
+/*
+Environment Record 的链式结构 (Scope Chain)
+因为健头函数的定义，所有 this 也被保存下来 (箭头函数没有自己的 this， 要用父级的)
+
+  --------------------------
+  Function: foo3
+    -----------------------   -----------------------
+    | Environment Record: |   | Environment Record: |
+    |       z: 2          | =>|       z: 2          | 
+    |     this:global     |   -----------------------
+    -----------------------
+    -----------------------
+    |       Code:         |
+    |  console.log(y, z)  |
+    -----------------------
+  --------------------------
+*/
+```
