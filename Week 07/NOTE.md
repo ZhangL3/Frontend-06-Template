@@ -616,7 +616,7 @@ Environment Record 的链式结构 (Scope Chain)
  * 在 JS 中，函数表达式和对象直接量都会创建对象
  * 使用 . 做隐式转换也会创建对象
  * 这些对象也是有原形的，如果没有 Realm ，就不知道他们的原型是什么
- * 不同的 Realm 之间是完全独立的, instanceof 可能会失效
+ * 不同的 Realm 之间是完全独立的, instanceOf 可能会失效
  * Realm 实例之间可以传递对象，但是传递过来后的 Prototype 是不一致的
 
 ```js
