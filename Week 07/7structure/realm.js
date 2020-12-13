@@ -74,6 +74,63 @@ const graph = new G6.Graph({
     // nodeSize: 30        // 节点大小，用于算法中防止节点重叠时的碰撞检测。由于已经在上一节的元素配置中设置了每个节点的 size 属性，则不需要在此设置 nodeSize。
     linkDistance: 100, // 指定边距离为100
   },
+  modes: {
+    default: ['drag-canvas', 'zoom-canvas', 'drag-node'], // 允许拖拽画布、放缩画布、拖拽节点
+    eidt: []
+  },
+  nodeStateStyles: {
+    // 鼠标 hover 上节点，即 hover 状态为 true 时的样式
+    hover: {
+      fill: 'lightsteelblue',
+    },
+    // 鼠标点击节点，即 click 状态为 true 时的样式
+    click: {
+      stroke: '#000',
+      lineWidth: 3,
+    },
+  },
+  // 边不同状态下的样式集合
+  edgeStateStyles: {
+    // 鼠标点击边，即 click 状态为 true 时的样式
+    click: {
+      stroke: 'steelblue',
+    },
+  },
+});
+
+// 添加监听事件
+// 鼠标进入节点
+graph.on('node:mouseenter', (e) => {
+  const nodeItem = e.item; // 获取鼠标进入的节点元素对象
+  graph.setItemState(nodeItem, 'hover', true); // 设置当前节点的 hover 状态为 true
+});
+
+// 鼠标离开节点
+graph.on('node:mouseleave', (e) => {
+  const nodeItem = e.item; // 获取鼠标离开的节点元素对象
+  graph.setItemState(nodeItem, 'hover', false); // 设置当前节点的 hover 状态为 false
+});
+
+// 点击节点
+graph.on('node:click', (e) => {
+  // 先将所有当前是 click 状态的节点置为非 click 状态
+  const clickNodes = graph.findAllByState('node', 'click');
+  clickNodes.forEach((cn) => {
+    graph.setItemState(cn, 'click', false);
+  });
+  const nodeItem = e.item; // 获取被点击的节点元素对象
+  graph.setItemState(nodeItem, 'click', true); // 设置当前节点的 click 状态为 true
+});
+
+// 点击边
+graph.on('edge:click', (e) => {
+  // 先将所有当前是 click 状态的边置为非 click 状态
+  const clickEdges = graph.findAllByState('edge', 'click');
+  clickEdges.forEach((ce) => {
+    graph.setItemState(ce, 'click', false);
+  });
+  const edgeItem = e.item; // 获取被点击的边元素对象
+  graph.setItemState(edgeItem, 'click', true); // 设置当前边的 click 状态为 true
 });
 
 const main = async () => {
