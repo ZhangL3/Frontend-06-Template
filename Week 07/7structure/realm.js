@@ -29,13 +29,44 @@ const initData = {
 // graph.data(initData); // 加载数据
 // graph.render(); // 渲染
 
-
+// 配置中更默认的改属性和样式
 const graph = new G6.Graph({
   container: 'mountNode', // 指定挂载容器
   width: 800, // 图的宽度
   height: 500, // 图的高度
   fitView: true,
   fitViewPadding: [20, 40, 50, 20],
+   // 节点在默认状态下的样式配置（style）和其他配置
+   defaultNode: {
+    size: 30, // 节点大小
+    // ...                 // 节点的其他配置
+    // 节点样式配置
+    style: {
+      fill: 'steelblue', // 节点填充色
+      stroke: '#666', // 节点描边色
+      lineWidth: 1, // 节点描边粗细
+    },
+    // 节点上的标签文本配置
+    labelCfg: {
+      // 节点上的标签文本样式配置
+      style: {
+        fill: '#fff', // 节点标签文字颜色
+      },
+    },
+  },
+  // 边在默认状态下的样式配置（style）和其他配置
+  defaultEdge: {
+    // ...                 // 边的其他配置
+    // 边样式配置,会被动态配置属性覆盖
+    style: {
+      opacity: 0.6, // 边透明度
+      stroke: 'grey', // 边描边颜色
+    },
+    // 边上的标签文本配置
+    labelCfg: {
+      autoRotate: true, // 边上的标签文本根据边的方向旋转
+    },
+  },
 });
 
 const main = async () => {
@@ -43,6 +74,45 @@ const main = async () => {
     'https://gw.alipayobjects.com/os/basement_prod/6cae02ab-4c29-44b2-b1fd-4005688febcb.json',
   );
   const remoteData = await response.json();
+
+  // 节点中更改独立的属性和样式
+  const nodes = remoteData.nodes;
+  nodes.forEach((node) => {
+    if (!node.style) {
+      node.style = {};
+    }
+    switch (
+      node.class // 根据节点数据中的 class 属性配置图形
+    ) {
+      case 'c0': {
+        node.type = 'circle'; // class = 'c0' 时节点图形为 circle
+        break;
+      }
+      case 'c1': {
+        node.type = 'rect'; // class = 'c1' 时节点图形为 rect
+        node.size = [35, 20]; // class = 'c1' 时节点大小
+        break;
+      }
+      case 'c2': {
+        node.type = 'ellipse'; // class = 'c2' 时节点图形为 ellipse
+        node.size = [35, 20]; // class = 'c2' 时节点大小
+        break;
+      }
+    }
+  });
+
+  // 遍历边数据，更改边的属性
+  const edges = remoteData.edges;
+  edges.forEach((edge) => {
+    if (!edge.style) {
+      edge.style = {};
+    }
+    edge.style.lineWidth = edge.weight; // 边的粗细映射边数据中的 weight 属性数值
+
+    // 被覆盖的全局配置属性可以在动态配置属性里重新定义
+    edge.style.opacity = 0.6;
+    edge.style.stroke = 'grey';
+  });
 
   // ...
   graph.data(remoteData); // 加载远程数据
