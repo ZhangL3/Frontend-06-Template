@@ -29,6 +29,15 @@ const initData = {
 // graph.data(initData); // 加载数据
 // graph.render(); // 渲染
 
+// 实例化 minimap 插件
+const minimap = new G6.Minimap({
+  size: [100, 100],
+  className: 'minimap',
+  type: 'delegate',
+});
+// 实例化 grid 插件
+const grid = new G6.Grid();
+
 // 配置中更默认的改属性和样式
 const graph = new G6.Graph({
   container: 'mountNode', // 指定挂载容器
@@ -75,7 +84,34 @@ const graph = new G6.Graph({
     linkDistance: 100, // 指定边距离为100
   },
   modes: {
-    default: ['drag-canvas', 'zoom-canvas', 'drag-node'], // 允许拖拽画布、放缩画布、拖拽节点
+    default: [
+      // 允许拖拽画布、放缩画布、拖拽节点
+      'drag-canvas',
+      'zoom-canvas',
+      'drag-node',
+      {
+        type: 'tooltip', // 提示框
+        formatText(model) {
+          // 提示框文本内容
+          const text = 'label: ' + model.label + '<br/> class: ' + model.class;
+          return text;
+        },
+      },
+      {
+        type: 'edge-tooltip', // 边提示框
+        formatText(model) {
+          // 边提示框文本内容
+          const text =
+            'source: ' +
+            model.source +
+            '<br/> target: ' +
+            model.target +
+            '<br/> weight: ' +
+            model.weight;
+          return text;
+        },
+      },
+    ], 
     eidt: []
   },
   nodeStateStyles: {
@@ -96,6 +132,7 @@ const graph = new G6.Graph({
       stroke: 'steelblue',
     },
   },
+  plugins: [minimap, grid], // 将 minimap 实例配置到图上
 });
 
 // 添加监听事件
@@ -180,6 +217,7 @@ const main = async () => {
 
   // ...
   graph.data(remoteData); // 加载远程数据
+
   graph.render(); // 渲染
 };
 
