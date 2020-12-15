@@ -4,7 +4,7 @@ function findIndexOfAb(str) {
     if (str[i] === 'a') {
       indexAb = i;
     } else {
-      if (indexAb > 0 && str[i] === 'b') {
+      if (indexAb >= 0 && str[i] === 'b') {
         return indexAb;
       }
       indexAb = -1;
