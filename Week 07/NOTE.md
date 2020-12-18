@@ -320,7 +320,7 @@ var a = 2;
 void function() {
   a = 1;
   return;
-  const;
+  const a;
 }();
 console.log(a); // 2
 // 会报错，但是 const 还是被预处理提前作为局部变量声明了
