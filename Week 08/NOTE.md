@@ -71,3 +71,10 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
 * 在 Request 的构造器中收集必要的信息
 * 设计一个 send 函数， 把请求真实发送到服务器
 * send 函数应该是异步的，所以返回 Promise
+
+#### 第三步 发送请求
+
+* 设计支持已有的 connection 或者自己新建 connection
+* 收到数据传给 parser
+* 根据 parser 的状态 resove Promise
+
