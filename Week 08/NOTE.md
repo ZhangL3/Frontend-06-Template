@@ -41,3 +41,19 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
 
 * Request
 * Response (一对一关系)
+* Protocol (文本型协议)
+  * POST/HTTP/1.1 (Request line: Method/path/http version)
+  * Host:127.0.0.1 (headers multilines)
+  * Content-Type: application/x-www-form-urlencoded
+  * 空行
+  * field1=aaa&code=x%3D1 (body, \r\n 换行符)
+
+### 实现一个 HTTP 请求
+
+#### 第一步 HTTP 请求总结
+
+* 设计一个 HTTP 请求的类
+* content type 是一个必要字段，要有默认值
+* body 是 kv 格式
+* 不同的 content-type 影响 body 的格式
+* 最后根据 bodyText 给出 content-length 字段
