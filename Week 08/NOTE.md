@@ -78,3 +78,8 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
 * 收到数据传给 parser
 * 根据 parser 的状态 resove Promise
 
+#### 第四步 ResponseParser 总结
+
+* Response 必须分段构造，所以我们要用一个 ResponseParser 来“装配“
+* ResponseParser 分段处理 ResponseText，我们用状态机来分析文本结构
+

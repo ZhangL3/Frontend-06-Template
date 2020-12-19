@@ -62,6 +62,21 @@ ${this.bodyText}`
 
 class ResponseParser {
     constructor() {
+        this.WAITING_STATUS_LINE = 0; // version, status code, status text
+        this.WAITING_STATUS_LINE_END = 1; // \r\n
+        this.WAITING_HEADER_NAME = 2; // name
+        this.WAITING_HEADER_SPACE = 3; // :后的空格
+        this.WAITING_HEADER_VALUE = 4; // value
+        this.WAITING_HEADER_LINE_END = 5; // \r\n
+        this.WAITING_HEADER_BLOCK_END = 6; // header 后的空行
+        this.WAITING_BODY = 7; // body
+
+        this.current = this.WAITING_STATUS_LINE;
+        this.statusLine = "";
+        this.headers = {};
+        this.headerName = "";
+        this.headerValue = "";
+        this.bodyParser = null;
     }
 
     receive(string) {
@@ -70,8 +85,51 @@ class ResponseParser {
         }
     }
 
-    reveiveChart(char) {
-        
+    receiveChar(char) {
+        console.log('char: ', char);
+        console.log('this.current: ', this.current);
+        if (this.current === this.WAITING_STATUS_LINE) {
+            if (char === '\r') {
+                this.current = this.WAITING_STATUS_LINE_END;
+            } else {
+                this.statusLine += char;
+            }
+        } else if (this.current === this.WAITING_STATUS_LINE_END) {
+            if (char === '\n') { // 换行为 \r\n, 上一个状态机已经匹配了 \n
+                this.current = this.WAITING_HEADER_NAME;
+            }
+        } else if (this.current === this.WAITING_HEADER_NAME) {
+            if (char === ':') { // 如果是冒号，等后面的空格
+                this.current = this.WAITING_HEADER_SPACE;
+            } else if (char === '\r') { // 如果是 \r, 说明是空行，header 结束
+                this.current = this.WAITING_HEADER_BLOCK_END;
+            } else {
+                this.headerName += char;
+            }
+        } else if (this.current === this.WAITING_HEADER_SPACE) {
+            if (char === ' ') {
+                this.current = this.WAITING_HEADER_VALUE;
+            }
+        } else if (this.current === this.WAITING_HEADER_VALUE) {
+            if (char === '\r') { // headers 的一行结束，KV 对儿存入 headers，清空接收空间
+                this.current = this.WAITING_HEADER_LINE_END;
+                this.headers[this.headerName] = this.headerValue;
+                this.headerName = "";
+                this.headerValue = "";
+            } else {
+                this.headerValue += char;
+            }
+        } else if (this.current === this.WAITING_HEADER_LINE_END) {
+            if (char === '\n') {
+                this.current = this.WAITING_HEADER_NAME;
+            }
+        } else if (this.current === this.WAITING_HEADER_BLOCK_END) {
+            if (char === '\n') {
+                this.current = this.WAITING_BODY;
+            }
+        } else if (this.current === this.WAITING_BODY) {
+            console.log('body char: ', char);
+        }
     }
 }
 
