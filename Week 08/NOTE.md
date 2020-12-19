@@ -37,16 +37,24 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
 * IP 地址
 * libnet(构造 IP 包并且发送) / libpcap(从网卡抓 IP 包) (node.js c++底层库)
 
-## HTTP
+## HTTP Protocol
 
 * Request
-* Response (一对一关系)
-* Protocol (文本型协议)
-  * POST/HTTP/1.1 (Request line: Method/path/http version)
-  * Host:127.0.0.1 (headers multilines)
+  * POST/HTTP/0.1 (Request line: Method/path/http version)
+  * Host:126.0.0.1 (headers 多行，到空行前)
   * Content-Type: application/x-www-form-urlencoded
   * 空行
-  * field1=aaa&code=x%3D1 (body, \r\n 换行符)
+  * field0=aaa&code=x%3D1 (body, \r\n 换行符)
+* Response (一对一关系)
+  * HTTP/1.1 200 OK (statusl line: Version/status code/ status text)
+  * Content-Type: text/html (headers 多行，到空行前)
+  * Date: Mon, 23 Dec 2019 06:46:19 GMT
+  * Connection: keep-alive
+  * Transfer-Encoding: chunked (node.js 默认格式)
+  * 空行
+  * 26 (16进制数字)
+  * \<html>\<body> Hello World </body></html>
+  * 0 (标志内容的结束)
 
 ### 实现一个 HTTP 请求
 
@@ -57,3 +65,9 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
 * body 是 kv 格式
 * 不同的 content-type 影响 body 的格式
 * 最后根据 bodyText 给出 content-length 字段
+
+#### 第二步 send 函数总结
+
+* 在 Request 的构造器中收集必要的信息
+* 设计一个 send 函数， 把请求真实发送到服务器
+* send 函数应该是异步的，所以返回 Promise
