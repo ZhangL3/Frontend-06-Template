@@ -179,7 +179,8 @@ class TrunkedBodyParser {
                 this.current = this.WAITING_LENGTH_LINE_END;
             } else {
                 // 因为传进来的是16进制，所以要乘以16。
-                // 比如长度是 23，先传进来 十位的2， 转换为 32， 再传进来 个位的3，不需要转换，相加为 35
+                // 比如长度是 23，进来第一位 2 时，length 还是 0，所以相当于个位不变，在下一行写入十进制的数 0 + 2 = 2
+                // 当下一位 3 传入的时候，原来的先传进来 2 变成了十位数，所以要 * 16，再加上新传的数字 3， 2 * 16 + 3 = 35
                 this.length *= 16;
                 // 再用 parseInt 写成10进制值
                 this.length += parseInt(char, 16);
