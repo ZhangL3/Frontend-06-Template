@@ -78,6 +78,20 @@ class ResponseParser {
         this.headerValue = "";
         this.bodyParser = null;
     }
+    
+    get isFinished() {
+        return this.bodyParser && this.bodyParser.isFinished;
+    }
+
+    get response() {
+        this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\s\S]+)/);
+        return {
+            statusCode: RegExp.$1,
+            statusText: RegExp.$2,
+            headers: this.headers,
+            body: this.bodyParser.content.join('')
+        }
+    }
 
     receive(string) {
         for (let i = 0; i < string.length; i++) {
@@ -86,8 +100,6 @@ class ResponseParser {
     }
 
     receiveChar(char) {
-        console.log('char: ', char);
-        console.log('this.current: ', this.current);
         if (this.current === this.WAITING_STATUS_LINE) {
             if (char === '\r') {
                 this.current = this.WAITING_STATUS_LINE_END;
@@ -103,6 +115,9 @@ class ResponseParser {
                 this.current = this.WAITING_HEADER_SPACE;
             } else if (char === '\r') { // 如果是 \r, 说明是空行，header 结束
                 this.current = this.WAITING_HEADER_BLOCK_END;
+                if (this.headers['Transfer-Encoding'] === 'chunked')
+                    // headers 的属性已经集齐，可以根据传输的格式，创建对应的 bodyParser
+                    this.bodyParser = new TrunkedBodyParser();
             } else {
                 this.headerName += char;
             }
@@ -129,6 +144,66 @@ class ResponseParser {
             }
         } else if (this.current === this.WAITING_BODY) {
             console.log('body char: ', char);
+            this.bodyParser.receiveChar(char);
+        }
+    }
+}
+
+class TrunkedBodyParser {
+    constructor() {
+        // chunk 是一个 16 进制长度后接一行内容
+        // 遇到长度为 0 的 chunk，body 结束
+        this.WAITING_LENGTH = 0;
+        this.WAITING_LENGTH_LINE_END = 1;
+        // 因为 chunk 里可以有任何字符，所以无法标定一个作为结束字符
+        // 这里用读回来的长度计数，判断什么时候推出 READING_TRUNK 状态
+        this.READING_TRUNK = 2;
+
+        this.WAITING_NEW_LINE = 3;
+        this.WAITING_NEW_LINE_END = 4;
+        this.length = 0;
+        this.content = [];
+        this.isFinished = false;
+        this.current = this.WAITING_LENGTH;
+    }
+
+    receiveChar(char) {
+        console.log('this.length: ', this.length);
+        console.log('this.current: ', this.current);
+        if (this.current === this.WAITING_LENGTH) {
+            // 找到 换行 时，说明已经读完了一个 length
+            if (char === '\r') {
+                if (this.length === 0) {
+                    this.isFinished = true;
+                }
+                this.current = this.WAITING_LENGTH_LINE_END;
+            } else {
+                // 因为传进来的是16进制，所以要乘以16。
+                // 比如长度是 23，先传进来 十位的2， 转换为 32， 再传进来 个位的3，不需要转换，相加为 35
+                this.length *= 16;
+                // 再用 parseInt 写成10进制值
+                this.length += parseInt(char, 16);
+            }
+        } else if (this.current === this.WAITING_LENGTH_LINE_END) {
+            if (char === '\n') {
+                this.current = this.READING_TRUNK;
+            }
+        } else if (this.current === this.READING_TRUNK) {
+            // 存入字符
+            this.content.push(char);
+            this.length --;
+            // 计数减到0，说明本行所有 char 已经解析完，进入等待换行状态
+            if (this.length === 0) {
+                this.current = this.WAITING_NEW_LINE;
+            }
+        } else if (this.current === this.WAITING_NEW_LINE) {
+            if (char === '\r') {
+                this.current = this.WAITING_NEW_LINE_END;
+            }
+        } else if (this.current === this.WAITING_NEW_LINE_END) {
+            if (char === '\n') {
+                this.current = this.WAITING_LENGTH;
+            }
         }
     }
 }
