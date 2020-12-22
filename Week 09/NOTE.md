@@ -5,3 +5,11 @@
 * 为了方便文件管理，我们把 parser 单独拆到文件中
 * parser 接收 HTML 文本作为参数，返回一颗 DOM 树
 
+## 第二步 用 FMS 实现 HTML 分析
+
+* 用 FMS 实现 HTML 分析
+* 在 HTML 标准中，已经规定了 HTML 的状态
+* Toy-Browser 只挑选其中一部分状态，完成一个最简版本
+
+
+ 
