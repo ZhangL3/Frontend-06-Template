@@ -1,3 +1,10 @@
+let currentToken = null;
+
+function emit(token) {
+    // if (token.type !== 'text')
+    console.log('token: ', JSON.stringify(token, null, 5));
+}
+
 const EOF = Symbol('EOF'); // EOF: End Of File
 
 /**
@@ -9,9 +16,16 @@ function data(c) {
     if (c === '<') {
         return tagOpen;
     } else if ( c === EOF ) {
+        emit({
+            type: 'EOF',
+        });
         return ;
     } else {
-        // 除了 < ，都被认为是文本节点，这里先忽略
+        emit({
+            type: 'text',
+            content: c,
+        });
+        // console.log('return data in data: ', data);
         return data;
     }
 }
@@ -22,8 +36,13 @@ function data(c) {
  */
 function tagOpen(c) {
     if (c === '/') {
-        state = endTagOpen;
+        return endTagOpen;
     } else if (c.match(/^[a-zA-Z]$/)) {
+        // 不是 / 说明是一个开始标签或者是自封闭标签的开始，初始化标签
+        currentToken = {
+            type: 'startTag',
+            tagName: '',
+        };
         return tagName(c);
     } else {
         return ;
@@ -36,6 +55,10 @@ function tagOpen(c) {
  */
 function endTagOpen(c) {
     if (c.match(/^[a-zA-Z]$/)) {
+        currentToken = {
+            type: 'endTag',
+            tagName: '',
+        };
         return tagName(c);
     } else if (c === '>') {
         // throw error
@@ -58,8 +81,10 @@ function tagName(c) {
     } else if (c === '/') {
         return selfClosingStartTag;
     } else if (c.match(/^[a-zA-Z]$/)) {
+        currentToken.tagName += c;//.toLowerCase();
         return tagName;
     } else if (c === '>') {
+        emit(currentToken);
         // 本标签解析完，开始解析下一个标签
         return data;
     } else {
@@ -73,6 +98,7 @@ function beforAttributeName(c) {
         return beforAttributeName;
     } else if (c === '>') {
         // 没有属性的标签结束
+        emit(currentToken);
         return data;
     } else if (c === '=') {
         return beforAttributeName;
@@ -95,7 +121,7 @@ function selfClosingStartTag(c) {
 module.exports.parseHTML = function parseHTML(html) {
     console.log(html);
     let state = data;
-    for (c of html) {
+    for (let c of html) {
         state = state(c);
     }
     
