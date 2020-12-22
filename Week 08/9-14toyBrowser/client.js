@@ -1,6 +1,10 @@
 const net = require('net');
 
 class Request {
+    /**
+     * Set the options of the request
+     * @param {object} options attribute of one request
+     */
     constructor(options) {
         this.method = options.method || "GET";
         this.host = options.host;
@@ -20,9 +24,15 @@ class Request {
         this.headers["Content-Length"] = this.bodyText.length;
     }
 
+    /**
+     * Build connection and send request
+     * @param {net.connection} connection 
+     */
     send(connection) {
         return new Promise((resolve, reject) => {
             const parser = new ResponseParser;
+            
+            // build connnection
             if (connection) {
                 connection.write(this.toString());
             } else {
@@ -34,9 +44,12 @@ class Request {
                         connection.write(this.toString());
                     })
                 } catch (err) {
+                    reject(err);
                     console.error(err);
                 }
             }
+
+            // get data and parse data
             connection.on('data', (data) => {
                 console.log('!!! data.toString():\n', data.toString());
                 parser.receive(data.toString());
@@ -45,6 +58,8 @@ class Request {
                     connection.end();
                 }
             });
+
+            // handle error
             connection.on('error', (err) => {
                 reject(err);
                 connection.end();
@@ -52,6 +67,9 @@ class Request {
         })
     }
 
+    /**
+     * fixed request content
+     */
     toString() {
         return `${this.method} ${this.path} HTTP/1.1\r
 ${Object.keys(this.headers).map(key => `${key}: ${this.headers[key]}`).join('\r\n')}\r
@@ -60,6 +78,9 @@ ${this.bodyText}`
     }
 }
 
+/**
+ * Parse the response data
+ */
 class ResponseParser {
     constructor() {
         this.WAITING_STATUS_LINE = 0; // version, status code, status text
@@ -79,10 +100,16 @@ class ResponseParser {
         this.bodyParser = null;
     }
     
+    /**
+     * get if parse finished
+     */
     get isFinished() {
         return this.bodyParser && this.bodyParser.isFinished;
     }
 
+    /**
+     * get the formated response
+     */
     get response() {
         this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\s\S]+)/);
         return {
@@ -93,12 +120,20 @@ class ResponseParser {
         }
     }
 
+    /**
+     * Handle the response in string
+     * @param {string} string response in string
+     */
     receive(string) {
         for (let i = 0; i < string.length; i++) {
             this.receiveChar(string.charAt(i));
         }
     }
 
+    /**
+     * Parse the response charactor to charactor
+     * @param {string} char one character
+     */
     receiveChar(char) {
         if (this.current === this.WAITING_STATUS_LINE) {
             if (char === '\r') {
@@ -149,6 +184,9 @@ class ResponseParser {
     }
 }
 
+/**
+ * Parse body of response
+ */
 class TrunkedBodyParser {
     constructor() {
         // chunk 是一个 16 进制长度后接一行内容
@@ -167,6 +205,10 @@ class TrunkedBodyParser {
         this.current = this.WAITING_LENGTH;
     }
 
+    /**
+     * Aggregate the characters in form of body
+     * @param {string} char one character
+     */
     receiveChar(char) {
         console.log('this.length: ', this.length);
         console.log('this.current: ', this.current);
@@ -209,6 +251,9 @@ class TrunkedBodyParser {
     }
 }
 
+/**
+ * Send the request and handle the response
+ */
 void async function () {
     let request = new Request({
         method: "POST",

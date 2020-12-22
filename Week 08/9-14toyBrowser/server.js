@@ -1,5 +1,8 @@
 const http = require('http');
 
+/**
+ * Create a server, return the fixed content
+ */
 http.createServer((request, response) => {
   let body = [];
   request.on('error', (err) => {
