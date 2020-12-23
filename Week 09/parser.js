@@ -9,7 +9,7 @@ function emit(token) {
 const EOF = Symbol('EOF'); // EOF: End Of File
 
 /**
- * 状态机的初始化方法，因为 HTML 标准里第 12.2.5 Tokenization 里用 data 来命名，这里也用 data 来命名
+ * 状态机的初始化方法，因为 HTML 标准里第 8.2.4 Tokenization 里用 data 来命名，这里也用 data 来命名
  * @param {string} c character
  */
 function data(c) {
@@ -130,6 +130,29 @@ function attributeName(c) {
     }
 }
 
+function afterAttributeName(c) {
+    if (c.match(/^\t\n\f ]$/)) {
+        return afterAttributeName;
+    } else if (c === '/') {
+        return selfClosingStartTag;
+    }  else if (c === '=') {
+        return beforeAttributeValue;
+    } else if (c === '>') {
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        emit(currentToken);
+        return data;
+    } else if (c === EOF) {
+
+    } else {
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        currentAttribute = {
+            name: '',
+            value: '',
+        };
+        return attributeName(c);
+    }
+} 
+
 function beforeAttributeValue(c) {
     if (c.match(/^[\t\n\f ]$/) || c === '/' || c === '>' || c === EOF) {
         return beforeAttributeName;
@@ -168,7 +191,7 @@ function singleQuotedAttributeValue(c) {
 
     } else {
         currentAttribute.value += c;
-        return doubleQuotedAttributeValue;
+        return singleQuotedAttributeValue;
     }
 }
 
@@ -215,6 +238,7 @@ function UnquotedAttributeValue(c) {
 function selfClosingStartTag(c) {
     if (c === '>') {
         currentToken.isSelfClosing = true;
+        emit(currentToken);
         return data;
     } else if (c === 'EOF') {
 
