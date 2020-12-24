@@ -1,13 +1,14 @@
 let currentToken = null;
 let currentAttribute = null;
 
-let tack = [{type: 'document', children: []}];
+let stack = [{type: 'document', children: []}];
 
 function emit(token) {
     console.log('token: ', JSON.stringify(token, null, 5));
 
     if (token.type === 'text')
         return;
+    // 栈顶
     let top = stack[stack.length - 1];
 
     if (token.type === 'startTag') {
@@ -27,20 +28,27 @@ function emit(token) {
                 });
             }
 
-            top.children.push(element);
-            element.parent = top;
-
-            if(!token.isSelfClosing)
-                stack.push(element);
-            
-            currentTextNode = null;
         }
+
+        // 入栈前添加 parent & children 关系，对偶操作
+        top.children.push(element);
+        element.parent = top;
+
+        // 自封闭元素被添加对偶关系后不需要入栈，因为没有封闭标签给它出栈
+        if(!token.isSelfClosing)
+            // 非自封闭元素需要入栈
+            stack.push(element);
+        
+        currentTextNode = null;
+        
     } else if(token.type === 'endTag') {
         if (top.tagName !== token.tagName) {
             throw new Error("Tag start end dosen't match");
         } else {
-            
+            // 找到了对应的关闭标签，就从栈顶取出
+            stack.pop();
         }
+        currentTextNode = null;
     }
 }
 
@@ -295,4 +303,6 @@ module.exports.parseHTML = function parseHTML(html) {
     // 文本结束时可能没有结束符，所以在这里给定一个结束符。
     // 这里的结束符不能有任何意义，所以用来 Symbol
     state = state(EOF);
+
+    console.log('stack[0]: ', stack[0]);
 }

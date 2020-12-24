@@ -28,6 +28,63 @@ let dom = parser.parseHTML(response.body);
 
 ## 第五步 处理属性
 
-* 属性值分为单引号、双引号、无引号三种写法，因此需要较多状态处理
+* 属性值分为单引号、双引号、无引号三种写法，因此需要较多状态处理 (见 htmlParser.drawio)
 * 处理属性的方式跟标签类似
-* 属性结束时，我们把属性添加倒 Token 上
+* 属性结束时，我们把属性添加到 Token 上
+
+```js
+token:  {
+     "type": "startTag",
+     "tagName": "html",
+     "maaa": "a"
+},
+token:  {
+     "type": "text",
+     "content": "\n"
+},
+token:  {
+     "type": "text",
+     "content": "b"
+}
+token:  {
+     "type": "startTag",
+     "tagName": "img",
+     "id": "myid",
+     "isSelfClosing": true
+},
+token:  {
+     "type": "endTag",
+     "tagName": "html"
+},
+token:  {
+     "type": "EOF"
+}
+```
+
+## 第六步 用 token构建 DOM 树 （tree construction 第一步）
+
+* 从标签构造 DOM 树的基本技巧就是使用栈
+* 遇到开始标签时创建元素并入栈，遇到结束标签时出栈
+* 自封闭节点可视为入栈后立刻出栈
+* 任何元素的父元素时它入栈前的栈顶
+
+```js
+// 栈. 遇到 startTag 先构建 element 和 对偶关系, 等遇到对应 endTag 再出栈
+[
+    {
+        type: 'document',
+        children: [{ type: element, tagName: 'html'}]
+    },
+    {
+        type: element,
+        tagName: 'html',
+        attributes:
+            [
+                { name: 'maaa', value: 'a' },
+            ],
+        children: [],
+        parent: { type: document, ...},
+    },
+    ...
+]
+```
