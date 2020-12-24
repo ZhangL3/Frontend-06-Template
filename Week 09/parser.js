@@ -2,12 +2,11 @@ let currentToken = null;
 let currentAttribute = null;
 
 let stack = [{type: 'document', children: []}];
+let currentTextNode = null;
 
 function emit(token) {
     console.log('token: ', JSON.stringify(token, null, 5));
 
-    if (token.type === 'text')
-        return;
     // 栈顶
     let top = stack[stack.length - 1];
 
@@ -41,7 +40,7 @@ function emit(token) {
         
         currentTextNode = null;
         
-    } else if(token.type === 'endTag') {
+    } else if (token.type === 'endTag') {
         if (top.tagName !== token.tagName) {
             throw new Error("Tag start end dosen't match");
         } else {
@@ -49,6 +48,17 @@ function emit(token) {
             stack.pop();
         }
         currentTextNode = null;
+    } else if (token.type === 'text') {
+        if (currentTextNode === null) {
+            currentTextNode = {
+                type: 'text',
+                content: '',
+            };
+            // 在遇到新的文本时，创捷文本节点，并作为 children 添加给栈顶
+            top.children.push(currentTextNode);
+        }
+        // 如果是连续的文本节点，就连接在一起
+        currentTextNode.content += token.content;
     }
 }
 

@@ -69,7 +69,8 @@ token:  {
 * 任何元素的父元素时它入栈前的栈顶
 
 ```js
-// 栈. 遇到 startTag 先构建 element 和 对偶关系, 等遇到对应 endTag 再出栈
+// 栈
+// 遇到 startTag 先构建 element 和 对偶关系, 等遇到对应 endTag 再出栈，最后只有整理好的 document 元素
 [
     {
         type: 'document',
@@ -88,3 +89,8 @@ token:  {
     ...
 ]
 ```
+
+## 第七步 将文本节点加到 DOM 树
+
+* 文本节点与自封闭标签的处理类似，不需要入栈出栈。遇到的新的就创建文本节点，并直接加入到栈顶的 children 中
+* 连续的多个文本节点需要合并到文本节点的 content 中
