@@ -1,11 +1,23 @@
+const css = require('css');
+
+const EOF = Symbol('EOF'); // EOF: End Of File
+
 let currentToken = null;
 let currentAttribute = null;
 
 let stack = [{type: 'document', children: []}];
 let currentTextNode = null;
 
+// 加入一个新的函数, addCSSRules, 把 CSS 规则暂存到一个数组里
+let rules = [];
+function addCSSRules(text) {
+    var ast = css.parse(text);
+    console.log(JSON.stringify(ast, null, '    '));
+    rules.push(...ast.stylesheet.rules);
+}
+
 function emit(token) {
-    console.log('token: ', JSON.stringify(token, null, 5));
+    // console.log('token: ', JSON.stringify(token, null, 5));
 
     // 栈顶
     let top = stack[stack.length - 1];
@@ -44,6 +56,11 @@ function emit(token) {
         if (top.tagName !== token.tagName) {
             throw new Error("Tag start end dosen't match");
         } else {
+            // ++++++++遇到 style 标签时，执行添加 CSS 规则的操作 ++++++++
+            if (top.tagName === 'style') {
+                addCSSRules(top.children[0].content);
+            }
+
             // 找到了对应的关闭标签，就从栈顶取出
             stack.pop();
         }
@@ -61,8 +78,6 @@ function emit(token) {
         currentTextNode.content += token.content;
     }
 }
-
-const EOF = Symbol('EOF'); // EOF: End Of File
 
 /**
  * 状态机的初始化方法，因为 HTML 标准里第 8.2.4 Tokenization 里用 data 来命名，这里也用 data 来命名
