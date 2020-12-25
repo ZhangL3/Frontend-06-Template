@@ -15,12 +15,46 @@ function addCSSRules(text) {
     rules.push(...ast.stylesheet.rules);
 }
 
+function match(element, selector) {
+    return false;
+}
+
 function computeCSS(element) {
     // slice 没有参数的时候就是复制一遍 array
     // 标签匹配是从当前元素往外匹配，所以要进行 reverse
     let elements = stack.slice().reverse();
-    // console.log('rules: ', rules);
-    // console.log('compute CSS for element: ', element);
+
+    if (!element.computedStyple)
+        element.computedStyple = {};
+
+    for(let rule of rules) {
+        // rule.selector[0]: "body div #myid"
+        // 为了和 elements 顺序一致，选择器也执行一次 reverse
+        let selectorParts = rule.selector[0].split(' ').reverse();
+
+        if(!match(element, selectorParts[0]))
+            continue;
+
+        let matched = false;
+
+        // j 表示当前选择器的位置
+        let j = 1;
+        // i 表示当前元素的位置
+        for(let i = 0; i < elements.length; i++) {
+            if(match(elements[i], selectorParts[j])) {
+                // 元素能够匹配选择器时，j 自增，去匹配 j 外层的选择器
+                j++;
+            }
+        }
+        // 如果所有的选择器都匹配到了，就认为只 matched
+        if (j >= selectorParts.length)
+            matched = true;
+
+        if (matched) {
+            // 如果匹配到，我们要加入
+            console.log('element: ', element, 'matched rule', rule);
+        }
+    }
 }
 function emit(token) {
     // console.log('token: ', JSON.stringify(token, null, 5));
