@@ -16,8 +16,11 @@ function addCSSRules(text) {
 }
 
 function computeCSS(element) {
-    console.log('rules: ', rules);
-    console.log('compute CSS for elsment: ', elsment);
+    // slice 没有参数的时候就是复制一遍 array
+    // 标签匹配是从当前元素往外匹配，所以要进行 reverse
+    let elements = stack.slice().reverse();
+    // console.log('rules: ', rules);
+    // console.log('compute CSS for element: ', element);
 }
 function emit(token) {
     // console.log('token: ', JSON.stringify(token, null, 5));
