@@ -15,8 +15,31 @@ function addCSSRules(text) {
     rules.push(...ast.stylesheet.rules);
 }
 
+/**
+ * 
+ * @param {string} element 
+ * @param {string} selector 
+ * 
+ * 三种简单选择器： .a, #a, div
+ */
 function match(element, selector) {
-    return false;
+    if (!selector || !element.attributes)
+        return false;
+    
+        if (selector.charAt(0) === '#') {
+            let attr = element.attributes.filter(attr => attr.name === 'id')[0];
+            if (attr && attr.value === selector.replace('#', ''))
+                return true;
+        } else if (selector.charAt(0) === '.') {
+            let attr = element.attributes.filter(attr => attr.name === 'class')[0];
+            if (attr && attr.value === selector.replace('.', ''))
+                return true;
+        } else {
+            if (element.tagName === selector) {
+                return true;
+            }
+        }
+        return false;
 }
 
 function computeCSS(element) {
@@ -30,7 +53,7 @@ function computeCSS(element) {
     for(let rule of rules) {
         // rule.selector[0]: "body div #myid"
         // 为了和 elements 顺序一致，选择器也执行一次 reverse
-        let selectorParts = rule.selector[0].split(' ').reverse();
+        let selectorParts = rule.selectors[0].split(' ').reverse();
 
         if(!match(element, selectorParts[0]))
             continue;
@@ -41,6 +64,10 @@ function computeCSS(element) {
         let j = 1;
         // i 表示当前元素的位置
         for(let i = 0; i < elements.length; i++) {
+            /**
+             * element[0] 为刚入栈的元素，它要与 #myid 和 img 分别进行匹配
+             * 如果匹配成功，elemnt 和 selecotr 都向外层延申并尝试匹配
+             */
             if(match(elements[i], selectorParts[j])) {
                 // 元素能够匹配选择器时，j 自增，去匹配 j 外层的选择器
                 j++;
