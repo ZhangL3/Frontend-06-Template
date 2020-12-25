@@ -56,7 +56,7 @@ URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with po
   * \<html>\<body> Hello World </body></html>
   * 0 (标志内容的结束)
 
-### 实现一个 HTTP 请求
+### HTTP 请求
 
 #### 第一步 HTTP 请求总结
 
