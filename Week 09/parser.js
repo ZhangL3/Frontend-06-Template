@@ -42,13 +42,39 @@ function match(element, selector) {
         return false;
 }
 
+function specificity(selector) {
+    let p = [0, 0, 0, 0];
+    let selectorParts = selector.split(' ');
+    for(let part of selectorParts) {
+        if (part.charAt(0) === '#') {
+            p[1] += 1;
+        } else if (part.charAt(0) === '.') {
+            p[2] += 1;
+        } else {
+            p[3] += 1;
+        }
+    }
+    return p;
+}
+
+function compare(sp1, sp2) {
+    if (sp1[0] - sp2[0])
+        return sp1[0] - sp2[0];
+    if (sp1[1] - sp2[1])
+        return sp1[1] - sp2[1];
+    if (sp1[2] - sp2[2])
+        return sp1[2] - sp2[2];
+
+    return sp1[3] - sp2[3];
+}
+
 function computeCSS(element) {
     // slice 没有参数的时候就是复制一遍 array
     // 标签匹配是从当前元素往外匹配，所以要进行 reverse
     let elements = stack.slice().reverse();
 
-    if (!element.computedStyple)
-        element.computedStyple = {};
+    if (!element.computedStyle)
+        element.computedStyle = {};
 
     for(let rule of rules) {
         // rule.selector[0]: "body div #myid"
@@ -79,11 +105,22 @@ function computeCSS(element) {
 
         if (matched) {
             // 如果匹配到，加入样式
-            let computedStyle = element.computedStyple;
+            let sp = specificity(rule.selectors[0]);
+            let computedStyle = element.computedStyle;
             for(let declaration of rule.declarations) {
                 if(!computedStyle[declaration.property])
                     computedStyle[declaration.property] = {};
-                computedStyle[declaration.property].value = declaration.value;
+
+                // 如果还没有 computedStyle 添加属性和值
+                if (!computedStyle[declaration.property].specificity) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    console.log('computedStyle[declaration.property].value: ', computedStyle[declaration.property].value);
+                    computedStyle[declaration.property].specificity = sp;
+                // 如果已经有 computedStyle，但新的 specificity 更大，覆盖之前的值
+                } else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    computedStyle[declaration.property].specificity = sp;
+                }
             }
             // console.log('element: ', element, 'matched rule', rule);
             console.log('element.computedStyle: ', element.computedStyle);
@@ -120,7 +157,7 @@ function emit(token) {
 
         // 入栈前添加 parent & children 关系，对偶操作
         top.children.push(element);
-        element.parent = top;
+        // element.parent = top;
 
         // 自封闭元素被添加对偶关系后不需要入栈，因为没有封闭标签给它出栈
         if(!token.isSelfClosing)
@@ -405,6 +442,7 @@ module.exports.parseHTML = function parseHTML(html) {
     // 文本结束时可能没有结束符，所以在这里给定一个结束符。
     // 这里的结束符不能有任何意义，所以用来 Symbol
     state = state(EOF);
+    return stack;
 
     console.log('stack[0]: ', stack[0]);
 }

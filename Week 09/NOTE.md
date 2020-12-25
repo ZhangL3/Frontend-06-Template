@@ -282,3 +282,22 @@ element = {
     type: 'element',
 }
 ```
+
+### 第七步 specificity 的计算逻辑
+
+* CSS 规则根据 specificity 和后来优先规则覆盖
+* specificity 是个四元组，越左边权重越高
+* 一个 CSS 规则的 specificity 根据包含的加单选择器相加而成
+
+#### specificity
+
+div div #id
+
+[      0,  1,     0,   2 ]
+[ inline, id, class, tag ]
+
+div .cls #id
+
+[      0,  1,     1,   1 ]
+
+只要高位能够比较出来，就不考虑低位
