@@ -12,10 +12,13 @@ let currentTextNode = null;
 let rules = [];
 function addCSSRules(text) {
     var ast = css.parse(text);
-    console.log(JSON.stringify(ast, null, '    '));
     rules.push(...ast.stylesheet.rules);
 }
 
+function computeCSS(element) {
+    console.log('rules: ', rules);
+    console.log('compute CSS for elsment: ', elsment);
+}
 function emit(token) {
     // console.log('token: ', JSON.stringify(token, null, 5));
 
@@ -40,6 +43,9 @@ function emit(token) {
             }
 
         }
+
+        // starTag 入栈时，计算 CSS 样式
+        computeCSS(element);
 
         // 入栈前添加 parent & children 关系，对偶操作
         top.children.push(element);
