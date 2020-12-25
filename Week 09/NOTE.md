@@ -247,3 +247,38 @@ elements = stack.slice().reverse();
  * 如果匹配到最外城仍然成功，证明 element 和 selector 完全匹配
  */
 ```
+
+### 生成 computed 属性
+
+* 一旦选择匹配，就应用选择器到元素上，形成 computedStyle
+
+```js
+// 匹配到 #myid 时的属性
+element = {
+    attributes: [
+        {name: 'id', value; 'myid'},
+        {name: 'isSelfClosing', value: true},
+    ],
+    children: [],
+    computedStyle: {
+        bakcground-color: {value: '#ff5000'},
+        width: {value: '100px'},
+    },
+    tagName: 'img',
+    type: 'element',
+}
+// 匹配到 img 时的属性，cumputedStyle 被覆盖了
+element = {
+    attributes: [
+        {name: 'id', value; 'myid'},
+        {name: 'isSelfClosing', value: true},
+    ],
+    children: [],
+    computedStyle: {
+        bakcground-color: {value: '#ff1111'},
+        width: {value: '30px'},
+    },
+    tagName: 'img',
+    type: 'element',
+}
+```
