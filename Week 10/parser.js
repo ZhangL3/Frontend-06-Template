@@ -177,7 +177,7 @@ function emit(token) {
                 addCSSRules(top.children[0].content);
             }
 
-            // CSS 要知道子元素是谁，所以要在结束标签（元素被出栈）之前确定 layout
+            // flex 布局要知道子元素是谁，所以要在结束标签（元素被出栈）之前确定 layout
             layout(top);
 
             // 找到了对应的关闭标签，就从栈顶取出
