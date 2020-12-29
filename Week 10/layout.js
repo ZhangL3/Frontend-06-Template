@@ -167,6 +167,7 @@ function layout(element) {
 
     // 剩余空间等于父元素的主轴尺寸 mainSize
     let mainSpace = elementStyle[mainSize];
+    // 交叉轴剩余空间
     let crossSpace = 0;
 
     // 插入元素进 flexLines
@@ -176,7 +177,7 @@ function layout(element) {
 
         // 没设主轴尺寸，默认值为 0
         if (itemStyle[mainSize] === null) {
-            itemsStyle[mainSize] = 0;
+            itemStyle[mainSize] = 0;
         }
 
         // 如果有 flex 属性，说明这个元素是可伸缩的
@@ -213,16 +214,135 @@ function layout(element) {
             }
 
             // 计算主轴和交叉轴的尺寸
-            if (itemsStyle[crossSize] !== null && itemsStyle[crossSpace] !== (void 0)) {
+            if (itemStyle[crossSize] !== null && itemStyle[crossSpace] !== (void 0)) {
                 crossSpace = Math.max(crossSpace, itemStyle[crossSpace]);
             }
             // 从剩余空间中剪掉当前元素的大小
-            mainSpace -= itemsStyle[mainSize];
+            mainSpace -= itemStyle[mainSize];
         }
     }
 
     // 最后一行的情况，没有元素了
     flexLine.mainSpace = mainSpace;
+
+    if (style.flexWrap === 'nowrap' || isAutoMainSize) {
+        flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] : crossSpace;
+    } else {
+        flexLine.crossSpace = crossSpace;
+    }
+
+    // 剩余空间小于 0，对所有元素进行等比压缩
+    if (mainSpace < 0) {
+        // 只发生在单行的情况
+        // overflow (happens only if container is single line), scale every item
+
+        // style[mainSize] 容器的主轴尺寸, (style[mainSize] - mainSpace) 为期望的尺寸
+        // mainSpace < 0, 所以 scale 一定小于 1
+        let scale = style[mainSize] / (style[mainSize] - mainSpace);
+        let currentMain = mainBase;
+
+        // 循环每一个元素
+        for (let i = 0; i < items.length; i += 1) {
+            let item = item[i];
+            let itemStyle = getStyle(item);
+
+            // flex 元素没有权利参加等比压缩，尺寸为 0
+            if (itemStyle.flex) {
+                itemStyle[mainSize] = 0;
+            }
+
+            // 元素主轴尺寸被压缩
+            itemStyle[mainSize] = itemStyle[mainSize] * scale;
+
+            // 根据当前主轴的位置 currentMain，算出元素被压缩后的位置
+            // currentMain 所排到的当前位置
+            itemStyle[mainsStart] = currentMain;
+            // 完成主轴计算，如果主轴是 row， left，right，width 被计算出来了
+            itemStyle[mainEnd] = itemStyle[mainsStart] + mainsSign * timeStyle[mainSize];
+            // 下一个元素的 currentMain 是当前元素的 mainEnd
+            currentMain = itemStyle[mainEnd];
+
+        }
+    } else {
+        // process each flex line
+        flexLines.forEach(function handleEachItemInFlexLine(items) {
+            
+            let mainSpace = items.mainSpace;
+            // flex 的总值
+            let flexTotal = 0;
+
+            for (let i = 0; i < items.length; i += 1) {
+                let item = items[i];
+                let itemStyle = getStyle(item);
+
+                if ((itemStyle.flex !== null) && (itemStyle.flex !== (void 0))) {
+                    // 如果有 flex 属性，就给它加到 flex 的总值上去
+                    flexTotal += itemStyle.flex;
+                    continue;
+                }
+            }
+
+            // 有 flex 元素，元素可以占满整个行，就不需要 justifyContent 来分配元素间的空隙
+            if (flexTotal > 0) {
+                // There is flexible flex items
+                let currentMain = mainBase;
+                for (let i = 0; i < items.length; i += 1) {
+                    let item = items[i];
+                    let itemStyle = getStyle(item);
+
+                    if (itemStyle.flex) {
+                        // 把主轴方向剩余空间 mainSpace 按 flex 值的比例分配给元素
+                        itemStyle[mainSize] = (mainSpace / flexTotal) * itemStyle.flex;
+                    }
+                    itemStyle[mainStart] = currentMain;
+                    itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+                    currentMain = itemStyle[mainEnd];
+                }
+            } else {
+                // 没有 flex 元素，就要根据 justifyContent 的值来分配元素间的空隙
+                // There is NO flexible flex items, which means, justifyContent should work
+
+                // 上一个元素色结束位置，即当前元素的开始位置
+                let currentMain;
+                // 元素间的间隔空间
+                let step;
+
+                // 从左向右排
+                if (style.justifyContent === 'flex-start') {
+                    currentMain = mainBase;
+                    step = 0;
+                }
+                // 从右向左排
+                if (style.justifyContent === 'flex-end') {
+                    currentMain = mainSpace * mainSign + mainBase;
+                    step = 0;
+                }
+                // 左右各留一边
+                if (style.justifyContent === 'center') {
+                    currentMain = mainSpace / 2 * mainSign + mainBase;
+                    step = 0;
+                }
+                // 元素间均匀间隔
+                if (style.justifyContent === 'space-between') {
+                    step = mainSpace / (items.length - 1) * mainSign;
+                    currentMain = mainBase;
+                }
+                // 左右边和元素间均匀间隔
+                if (style.justifyContent === 'space-around') {
+                    step = mainSpace / items.length * mainSign;
+                    currentMain = step / 2 + mainBase;
+                }
+                // 计算元素位置，如果是 row，就是左和右，宽是 右-左
+                for (let i = 0; i < items.length; i += 1) {
+                    let item = items[i];
+                    let itemStyle = getStyle(item);
+                    itemStyle[mainStart] = currentMain;
+                    itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+                    currentMain = itemStyle[mainEnd] + step;
+                }
+            }
+        })
+    }
 
     console.log('items: ', items);
 
