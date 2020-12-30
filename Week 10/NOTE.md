@@ -214,3 +214,12 @@ Axis    |
 }
 
 ```
+
+## 渲染
+
+### 第一步 绘制单个元素
+
+* 绘制需要依赖一个图形环境
+* 我们这里采用了 npm 包 images
+* 绘制在一个 viewport 上进行
+* 与绘制相关的属性： background-color, border, background-image 等
