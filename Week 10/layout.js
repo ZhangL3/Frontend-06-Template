@@ -231,6 +231,7 @@ function layout(element) {
         flexLine.crossSpace = crossSpace;
     }
 
+    // 计算主轴上元素的位置
     // 剩余空间小于 0，对所有元素进行等比压缩
     if (mainSpace < 0) {
         // 只发生在单行的情况
@@ -332,7 +333,7 @@ function layout(element) {
                     step = mainSpace / items.length * mainSign;
                     currentMain = step / 2 + mainBase;
                 }
-                // 计算元素位置，如果是 row，就是左和右，宽是 右-左
+                // 计算元素位置，如果是 row，就是左和右，宽是 mainSize
                 for (let i = 0; i < items.length; i += 1) {
                     let item = items[i];
                     let itemStyle = getStyle(item);
@@ -344,6 +345,110 @@ function layout(element) {
         })
     }
 
+    // compute the cross axis sizes 计算行高 crossSpace
+    // align-items (定义交叉轴上如何对齐), align-content (定义多根轴线的对齐方式), asign-self (允许单个项目与其他项目不一样的对齐方式，可覆盖 align-items)
+    // 容器的纵轴空隙
+    crossSpace = 0;
+
+    // 如果没有定义容器的高，空隙为0，元素的高为 元素高 + 行空隙
+    if (!style[crossSize]) { // auto sizing
+        crossSpace = 0;
+        elementStyle[crossSize] = 0;
+        for (let i = 0; i < flexLines.length; i++) {
+            elementStyle[crossSize] = elementStyle[crossSize] + flexLines[i].crossSpace
+        }
+    } else {
+        // 如果定义了行高，用总的高度依次减去行的空隙，得到剩余的行高
+        crossSpace = style[crossSize];
+        for (let i = 0; i < flexLines.length; i += 1) {
+            crossSpace -= flexLines[i].crossSpace;
+        }
+    }
+
+    if (style.flexWrap === 'wrap-reverse') {
+        crossBase = style[crossSize];
+    } else {
+        crossBase = 0;
+    }
+
+    // TODO: 没有被用到的变量，
+    let lineSize = style[crossSize] / flexLines.length;
+
+    let step;
+    // 与交叉轴的起点对齐
+    if (style.alignContent === 'flex-start') {
+        crossBase += 0;
+        step = 0;
+    }
+    // 与交叉轴的终点对齐
+    if (style.alignContent === 'flex-end') {
+        crossBase += crossSign * crossSpace;
+        step = 0;
+    }
+    // 与交叉轴的中点对齐
+    if (style.alignContent === 'center') {
+        crossBase += crossSign * crossSpace / 2;
+        step = 0;
+    }
+    // 与交叉轴两端对齐，轴线之间的间隔平均分布
+    if (style.alignContent === 'space-between') {
+        crossBase += 0;
+        step = crossSpace / (flexLines.length - 1);
+    }
+    // 每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍
+    if (style.alignContent === 'space-around') {
+        step = crossSpace / (flexLines.length);
+        // 边是间隙的一半儿大
+        crossBase += crossSign * step / 2;
+    }
+    // 轴线占满整个交叉轴
+    if (style.alignContent === 'stretch') {
+        crossBase += 0;
+        step = 0;
+    }
+
+    flexLines.forEach(function (items) {
+        // 当前行真实的交叉轴尺寸
+        let lineCrossSize = style.alignContent === 'stretch' ?
+            items.crossSpace + crossSpace / flexLines.length :
+            item.crossSpace;
+        // 交叉轴的位置和尺寸需要计算每个元素的尺寸
+        for (let i = 0; i < items.length; i += 1) {
+            let item = items[i];
+            let itemStyle = getStyle(item);
+
+            let align = itemStyle.alignSelf || style.alignItems;
+
+            // 如果 item 没有指定交叉轴尺寸, 给一个默认值
+            if (itemStyle[crossSize] === null || itemStyle[crossSize] === undefined) {
+                itemStyle[crossSize] = (align === 'stretch') ?
+                    lineCrossSize : 0;
+            }
+            // 对齐行顶
+            if (align === 'flex-start') {
+                itemStyle[crossStart] = crossBase;
+                itemStyle[crossEnd] = itemStyle[crossStart] + crossSign * itemStyle[crossSize];
+            }
+            // 对齐行底
+            if (align === 'flex-end') {
+                itemStyle[crossEnd] = crossBase + crossSign * lineCrossSize;
+                itemStyle[crossStart] = itemStyle[crossEnd] - crossSign * itemStyle[crossSize]
+            }
+            // 对齐行中线
+            if (align === 'center') {
+                itemStyle[crossStart] = crossBase + crossSign * (lineCrossSize - itemStyle[crossSize]) /2
+                itemStyle[crossEnd] = itemStyle[crossStart] + crossSign * itemStyle[crossSize];
+            }
+            // 如果项目未设置高度或设为auto，将占满整个容器的高度
+            if (align === 'stretch') {
+                itemStyle[crossStart] = crossBase;
+                itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)) ?
+                    itemStyle[crossSize] : lineCrossSize);
+                itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart]);
+            }
+        }
+        crossBase += crossSign * (lineCrossSize + step);
+    });
     console.log('items: ', items);
 
 }

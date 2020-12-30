@@ -109,3 +109,108 @@ Axis    |
 
  * /
 ```
+
+### 第四步 计算交叉轴
+
+* 计算交叉轴方向
+  * 根据每一行中最大元素尺寸计算行高
+  * 根据行高 flex-align 和 item-align，确定元素具体位置
+
+```js
+/**
+            Main Axsis
+        |- - - - - - - - - - >
+        |^^^^^^^^$$$$$$$$$....
+Cross   |
+Axis    |
+        |
+        v
+**/
+
+// 根据 computedStyle 和 flex 计算出 style
+
+// flexLine: #container
+ "computedStyle": {
+        "width": {
+                "value": "500px",
+                "specificity": [
+                        0,
+                        1,
+                        0,
+                        0
+                ]
+        },
+        "height": {
+                "value": "300px",
+                "specificity": [
+                        0,
+                        1,
+                        0,
+                        0
+                ]
+        },
+        "display": {
+                "value": "flex",
+                "specificity": [
+                        0,
+                        1,
+                        0,
+                        0
+                ]
+        }
+},
+"style": {
+        "width": 500,
+        "height": 300,
+        "display": "flex",
+        "flexDirection": "row",
+        "alignItems": "stretch",
+        "justifyContent": "flex-start",
+        "flexWrap": "nowrap",
+        "alignContent": "stretch"
+}
+
+// item in flexLine: #myid
+"computedStyle": {
+        "width": {
+        "value": "200px",
+        "specificity": [
+                0,
+                2,
+                0,
+                0
+        ]
+        }
+},
+"style": {
+        "width": 200,
+        "left": 0,
+        "right": 200,
+        "height": 300,
+        "top": 0,
+        "bottom": 300
+}
+
+// item in flexLine: .c1
+"computedStyle": {
+        "flex": {
+        "value": "1",
+        "specificity": [
+                0,
+                1,
+                1,
+                0
+        ]
+        }
+},
+"style": {
+        "flex": 1,
+        "width": 300,
+        "left": 200,
+        "right": 500,
+        "height": 300,
+        "top": 0,
+        "bottom": 300
+}
+
+```
