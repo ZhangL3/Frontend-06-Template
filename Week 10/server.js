@@ -12,7 +12,7 @@ http.createServer((request, response) => {
   }).on('end', () => {
     body = Buffer.concat([Buffer.from(body.toString())]).toString();
     console.log('body: ', body);
-    response.writeHead(200, {'Content-Type': 'test/html'});
+    response.writeHead(200, {'Content-Type': 'text/html'});
     response.end(
 `<html maaa=a >
 <head>
@@ -36,8 +36,8 @@ http.createServer((request, response) => {
 </head>
   <body>
     <div id="container">
-      <div id="myid"/>
-      <div class="c1"/>
+      <div id="myid"></div>
+      <div class="c1"></div>
     </div>
   </body>
 </html>`);

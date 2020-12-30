@@ -223,3 +223,10 @@ Axis    |
 * 我们这里采用了 npm 包 images
 * 绘制在一个 viewport 上进行
 * 与绘制相关的属性： background-color, border, background-image 等
+
+### 第二步 绘制 DOM 树
+
+* 递归调用子元素的绘制方法完成 DOM 树的绘制
+* 忽略一些不需要绘制的节点
+* 实际的浏览器中，文字绘制是难点，需要依赖字体库，我们这里忽略
+* 实际的浏览器中，还会对一些图层左 compositing， 我们这里也忽略了

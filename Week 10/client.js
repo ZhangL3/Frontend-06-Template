@@ -277,7 +277,7 @@ void async function () {
 
     let viewport = images(800, 600);
 
-    render(viewport, dom.children[0].children[3].children[1].children[3]);
+    render(viewport, dom);
 
     viewport.save('viewport.jpg');
 
