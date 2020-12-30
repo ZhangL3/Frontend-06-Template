@@ -2,7 +2,7 @@
 
 ## 浏览器显示 HTML 过程
 
-URL =HTML=> HTML =parse=> DOM =css computin=> DOM with CSS =layout=> DOM with position =render=> Bitmap
+URL =HTML=> HTML =parse=> DOM =css computing=> DOM with CSS =layout=> DOM with position =render=> Bitmap
 
 ## 有限状态机(finite-state machine)
 
