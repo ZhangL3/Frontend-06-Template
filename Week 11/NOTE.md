@@ -28,13 +28,13 @@ CSS 知识结构:
       * selector_group
       * selector
         * >
-        * <sp>
-        * +
+        * \<sp>
+        * \+
         * ~
       * simple_selector
         * type
-        * *
-        * . 
+        * \*
+        * .
         * \#
         * [] 属性
         * : 伪类
@@ -75,4 +75,15 @@ CSS 知识结构:
 div {
   background-color: blue;
 }
+```
+
+### 收集标准
+
+```js
+// 从 https://www.w3.org/TR/?tag=css 抓取 CSS 标准
+JSON.stringify(Array.prototype.slice.call(
+  document.querySelector("#container").children
+)
+.filter(e => e.getAttribute("data-tag")
+.match(/css/)).map(e => ({name:e.children[1].innerText, url:e.children[1].children[0].href})))
 ```
