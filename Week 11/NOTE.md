@@ -88,7 +88,7 @@ JSON.stringify(Array.prototype.slice.call(
 .match(/css/)).map(e => ({name:e.children[1].innerText, url:e.children[1].children[0].href})))
 ```
 
-## 总结
+### 总结
 
 * CSS 语法
 * at-rule
@@ -96,3 +96,30 @@ JSON.stringify(Array.prototype.slice.call(
 * variables
 * value
 * 实验 (收集标准)
+
+## CSS 选择器
+
+### 选择器语法
+
+* 简单选择器
+  * \* 通用选择器，选中任何的元素
+  * div svg|a (type selector) 选的是 tagName 属性
+    * CSS 的命名空间
+      * HTML
+      * SVG
+      * MathML
+    * | 命名空间分隔符 (HTML 中的为 :)
+  * .cls class 选择器 (可以用空格作分隔符,选中一个就匹配)
+  * #id id 选择器 (严格匹配)
+  * [attr=value] 属性选择器
+  * :hover 伪类选择器 (元素特殊的状态)
+  * ::before 伪元素选择器 (选中原本不存在的元素)
+* 复合选择器 combined selector
+  * <简单选择器><简单选择器><简单选择器> (与的关系)
+  * \* 或者 div 必须写在最前面
+* 复杂选择器
+  * <复合选择器>\<sp><符合选择器> 子孙选择器 (左边必须得是右边的父级或祖先)
+  * <复合选择器>">"<符合选择器> 父子选择器 选择所有右边的元素，其父元素为左边的元素
+  * <复合选择器>"~"<符合选择器> 选择每一个右边元素，其前一个是左边的元素
+  * <复合选择器>"+"<符合选择器> 选择第一个右边元素，其前一个元素是左边的元素
+  * <复合选择器>"||"<符合选择器> 选择表格中右边的元素，其属于左边的元素
