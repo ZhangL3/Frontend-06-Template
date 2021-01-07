@@ -163,3 +163,102 @@ div.a {
   /* [0, 0, 1, 1] */
 }
 ```
+
+### 伪类
+
+* 链接 / 行为
+  * :any-link 匹配所有超链接
+  * :link :visited 匹配还没访问过的超链接 匹配访问过的超链接
+    * 一旦用了 :link 或者 :visited 只能更改 color 属性，不能更改 layout 相关属性 (安全性)
+  * :hover 鼠标悬停
+  * :active 激活状态(鼠标在上面被按下)
+  * :focus 获得焦点 (如表单输入，当用户点击或触摸元素或通过键盘的 “tab” 键选择它时会被触发。)
+  * :target 链接到当前的目标 (代表一个唯一的页面元素(目标元素)，其id 与当前URL片段匹配 )
+    ```html
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+    :target {
+      border: 2px solid #D4D4D4;
+      background-color: #e5eecc;
+    }
+    </style>
+    </head>
+    <body>
+
+    <h1>This is a heading</h1>
+
+    <p><a href="#news1">Jump to New content 1</a></p>
+    <p><a href="#news2">Jump to New content 2</a></p>
+
+    <p>Click on the links above and the :target selector highlight the current active HTML anchor.</p>
+
+    <p id="news1"><b>New content 1...</b></p>
+    <p id="news2"><b>New content 2...</b></p>
+
+    </body>
+    </html>
+    ```
+* 树结构
+  * :empty 元素是否有子元素
+  * :nth-child(even || odd || 4N + 1) 第几个子元素
+  * :nth-last-child()
+  * :first-child :last-child :only-child
+* 逻辑型
+  * :not(复合选择器)
+  * :where :has
+
+### 伪元素 (通过选择器向页面添加一个不存在的元素)
+
+* 通过选择器向页面添加一个不存在的元素
+  * ::before 在元素内容的前，declaration 中可以写 content 属性，如同真正的 DOM 元素，参与渲染
+  * ::after 在元素内容的后，同上
+  ```html
+  <div>
+  <::befor/>
+  content content content
+  content content content
+  content content content
+  content content content
+  <::after/>
+  </div>
+  ```
+* 通过不存在的元素把选中的东西括起来
+  * ::first-line 选中第一行
+  ```html
+  <div>
+  <::firstletter>c</::firstletter> ontent content content
+  content content content
+  content content content
+  content content content
+  </div>
+  ```
+  * ::first-letter 选中第一个字母
+  ```html
+  <!-- ::firtline 是渲染后的行，浏览器环境下-->
+  ```
+
+#### 可用的属性
+
+* first-line
+  * font 系列
+  * color 系列
+  * background 系列
+  * word-spacing
+  * letter-spacing
+  * text-decoration
+  * text-tranform
+  * lint-height
+* first-letter
+  * font 系列
+  * color 系列
+  * background 系列
+  * text-decoration
+  * text-transform
+  * letter-spacing
+  * word-spacing
+  * line-height
+  * float
+  * vertical-align
+  * 盒模型系列: margin, padding, border
