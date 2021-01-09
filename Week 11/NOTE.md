@@ -173,7 +173,8 @@ div.a {
   * :hover 鼠标悬停
   * :active 激活状态(鼠标在上面被按下)
   * :focus 获得焦点 (如表单输入，当用户点击或触摸元素或通过键盘的 “tab” 键选择它时会被触发。)
-  * :target 链接到当前的目标 (代表一个唯一的页面元素(目标元素)，其id 与当前URL片段匹配 )
+  * :target 链接到当前的目标 (代表一个唯一的页面元素(目标元素)，其id 与当前URL片段匹配)
+
     ```html
     <!DOCTYPE html>
     <html>
@@ -200,6 +201,7 @@ div.a {
     </body>
     </html>
     ```
+
 * 树结构
   * :empty 元素是否有子元素
   * :nth-child(even || odd || 4N + 1) 第几个子元素
@@ -214,6 +216,7 @@ div.a {
 * 通过选择器向页面添加一个不存在的元素
   * ::before 在元素内容的前，declaration 中可以写 content 属性，如同真正的 DOM 元素，参与渲染
   * ::after 在元素内容的后，同上
+
   ```html
   <div>
   <::befor/>
@@ -224,8 +227,10 @@ div.a {
   <::after/>
   </div>
   ```
+
 * 通过不存在的元素把选中的东西括起来
   * ::first-line 选中第一行
+
   ```html
   <div>
   <::firstletter>c</::firstletter> ontent content content
@@ -234,7 +239,9 @@ div.a {
   content content content
   </div>
   ```
+
   * ::first-letter 选中第一个字母
+
   ```html
   <!-- ::firtline 是渲染后的行，浏览器环境下-->
   ```
@@ -262,3 +269,7 @@ div.a {
   * float
   * vertical-align
   * 盒模型系列: margin, padding, border
+
+### 为什么 first-letter 可以设置 float 之类的，而 first-line 不行呢？
+
+first-letter 在页面被布局前就可以被确定和对其进行排版。但 first-line 是渲染出的第一行，如果它可以被重新布局，在页面已经确定布局后要再一次重新排版。可能是出入性能原因，first-line 不能被设置 layout 相关的声明
