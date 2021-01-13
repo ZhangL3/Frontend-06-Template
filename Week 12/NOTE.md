@@ -61,3 +61,24 @@ inline-level-box (inline-formating-context IFC): 行内的盒
 line-box：行盒
 
 block-level-box (block-formating-context BFC): 块盒
+
+### 正常流的行级排布
+
+#### baseline
+
+#### text
+
+#### CSS 行模型
+
+* line-top
+* text-top
+* base-line
+* text-bottom
+* line-bottom
+
+![line-model] (linemodel.png)
+
+行内盒的基线是随着自己里面的文字变化儿变化，多以不建议使用基线对齐。建议使用 vertical-align
+
+
+
