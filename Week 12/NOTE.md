@@ -80,5 +80,21 @@ block-level-box (block-formating-context BFC): 块盒
 
 行内盒的基线是随着自己里面的文字变化儿变化，多以不建议使用基线对齐。建议使用 vertical-align
 
+### 正常流的块级排布
 
+#### float 与 clear (浮动元素)
+
+* float （浮动）
+  * 先把元素排到一个该有的位置，然后把它向 float 的方向挤，受到影响(受元素高度)的其他内容排到它的后面，后一个 folat 收到前面的 float 影响
+  * 不认 \</br>
+  * 换行用 clear 属性
+  * float:left 会出现重拍的问题，下一行的 div 影响了上一行的文字的位置
+  * 不建议继续使用 float
+* clear （找到一块干净的空间，执行 float 操作）
+
+### 边距堆叠 (margin collapse)
+
+* 只发生在 bfc 中
+* 两个相连的 margin 会互相折叠，距离取值大的那个 margin
+* margin 是说周围至少要有什么多的空白，不是说一定要留这么多位置，所以周围的边距够了，就不用执行自己了
 
