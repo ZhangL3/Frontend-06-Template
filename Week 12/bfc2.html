@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bfc2 BFC合并与边距折叠</title>
+</head>
+<body>
+  <div style="width: 100px;height: 100px;background-color: aqua;margin: 20px;"></div>
+
+  <!-- hidden 的情况，里面和外面属于一个BFC，所以没有边距折叠 -->
+  <!-- <div style="overflow: hidden;background-color: pink;"> -->
+  <!-- visible 发生边距折叠 -->
+  <!-- <div style="overflow: visible;background-color: pink;"> -->
+  <!-- 三个边距折叠在一起 -->
+  <div style="margin-top: 30px;overflow: visible;background-color: pink;">
+    <div style="width: 100px;height: 100px;background-color: aqua;margin: 20px;"></div>
+  </div>
+</body>
+</html>
