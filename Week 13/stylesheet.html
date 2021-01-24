@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stylesheet</title>
+
+  <style title="Hello">
+    a::before {
+      color: red;
+      content: "Hello"
+    }
+  </style>
+</head>
+<body>
+  <!-- css 两种定义方法， style 标签里，或者 link 标签里 -->
+  <!-- %7b = {, %7D = } -->
+  <link rel="stylesheet" title="x" href="data:text/css,p%7Bcolor:blue%7D">
+  <a> world </a>
+
+  <script>
+    const ssl = document.styleSheets;
+    console.log(ssl);
+    // change style rule
+    ssl[0].cssRules[0].style.color = 'lightgreen';
+
+    // getComputedStyle
+    const csba = getComputedStyle(document.querySelector('a'), '::before').color;
+    console.log(csba);
+    
+  </script>
+</body>
+</html>
