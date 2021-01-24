@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>events</title>
+</head>
+<body>
+  <div id="a" style="width:100%;height:300px;background:lightblue;">
+    a
+    <div id="b" style="width:100%;height:200px;background:pink;">
+      b
+    </div>
+
+  </div>
+  <script>
+    let a = document.getElementById('a');
+    let b = document.getElementById('b');
+
+    // 都不给 opotions，点击上半部会触发 a 和 b 的默认的冒泡事件的监听
+    a.addEventListener("click", function(){console.log('a')})
+    b.addEventListener("click", function(){console.log('b')})
+    // b, a: 因为 b 在里层，所以会先被触发冒泡事件
+
+    // 加上捕获的 option 为 true
+    a.addEventListener("click", function(){console.log('a1')}, true)
+    b.addEventListener("click", function(){console.log('b1')}, true)
+    // a1, b, b1, a: 先触发 a 的捕获，b 的事件依次触发,最后冒泡回 a
+
+    b.addEventListener("click", function(){console.log('b3')})
+    // a1, b, b1, b3, a: 先触发 a 的捕获，b 的事件依次触发,不受冒泡捕获影响,最后冒泡回 a
+    b.addEventListener("click", function(){console.log('b4')}, true)
+  </script>
+</body>
+</html>
