@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse DOM Element</title>
+</head>
+<body>
+  <div id="a">
+    <span>1</span>
+    <p>2</p>
+    <p>3</p>
+    <div>4</div>
+  </div>
+
+  <script>
+    let element = document.getElementById('a');
+
+    function reverseChildren1(element) {
+      // Array.prototype.slice 浅拷贝对象
+      let children = Array.prototype.slice.call(element.childNodes);
+
+      for(let child of children) {
+        element.removeChild(child);
+      }
+      // element.innerHTML = ''; // 可以替代 remove 的操作
+
+      children.reverse();
+
+      for(let child of children) {
+        element.appendChild(child);
+      }
+    }
+    
+    // 3 次 DOM 操作，产生重排，性能不好
+    function reverseChildren2(element) {
+      let  l = element.childNodes.length;
+      while(l-- > 0) {
+        element.appendChild(element.childNodes[l]);
+      }
+    }
+
+    // 2 次 DOM 操作, 一次删除，一次插入7
+    function reverseChildren(element) {
+      let range = new Range();
+      range.selectNodeContents(element);
+
+      let fragement = range.extractContents();
+      let l = fragement.childNodes.length;
+      while(l-- > 0) {
+        fragement.appendChild(fragement.childNodes[l]);
+      }
+      element.appendChild(fragement);
+    }
+
+    reverseChildren(element);
+  </script>
+</body>
+</html>
