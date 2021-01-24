@@ -187,3 +187,63 @@ range 上可以执行 Element 的方法
 * window.getComputedStyle(elt, psuedoElt);
   * elt 想要获取的元素
   * pseudoElt 可选，伪元素
+
+### CSSOM View
+
+获取 render 之后的信息
+
+#### window
+
+* window.innerHeight, window.innerWidth // 实际渲染的区域
+* window.outerWidth, window.outerHeight // 包含了浏览器自带的工具栏, inspector, 不太用
+* window.devicePixelRatio (important!!!) // 物理像素和逻辑像素的比值
+* window.screen // 和硬件相关，不太用
+  * window.screen.width
+  * window.screen.height
+  * window.screen.availWidth
+  * window.scrren.availHeight
+
+#### Window API
+
+* window.open("about:blank", "_blank", "width=100,height=100,left=100,right=100")
+* moveTo(x, y) // to window的绝对位置
+* moveBy(x, y) // by window相对现在的相对位置
+* resizeTo(x, y)
+* resizeBy(x, y)
+
+#### scroll
+
+有滚动条是才会生效
+
+* element
+  * scrollTop // 找当前滚动到的位置
+  * scrollLeft
+  * scrollWidth // 可滚动内容的最大的宽度和高度
+  * scrollHeight
+  * scroll(x, y) // alias: scrollTo(x, y) 滚动到特定的位置
+  * scrollBy(x, y)
+  * scrollIntoView() // 强制滚动到屏幕的可见区域
+* window
+  * scrollX
+  * scrollY
+  * scroll(x, y)
+  * scrollBy(x, y)
+
+#### layout
+
+* getClientRects() // 获取元素内所有的盒,伪元素也参与。纯文字没有盒，所有不参与。
+* getBoundingClientRect() // 取元素盒区域
+
+### 其他的 API
+
+#### 标准化组织
+
+* khronos
+  * WebGL
+* ECMA
+  * ECMAScript
+* WHATWG
+  * HTML
+* W3C
+  * webaudio
+  * IG/CG/WG
