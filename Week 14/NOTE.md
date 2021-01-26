@@ -136,3 +136,19 @@ config: 一次性结果，只在构造是被触发，不可更改。通常留给
   <li><img src="{{icon}}"/>{{title}}</li>
 </my-list>
 ```
+#### 为组件添加 JSX 语法
+
+```bash
+mkdir jsx
+cd jsx
+npm init
+npm install -g webpack webpack-cli
+npm install --save-dev webpack babel-loader
+vim webpack.config.js (entry)
+webpack
+npm install --save-dev @babel/core @babel/preset-env
+vim webpack.config.js (module.rules: babel-loader: presets)
+webpack
+npm install --save-dev @babel/plugin-transform-react-jsx
+vim webpack.config.js (moduel.rules: babel-loader: plugins)
+```
