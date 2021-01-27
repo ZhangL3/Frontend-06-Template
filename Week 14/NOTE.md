@@ -152,3 +152,14 @@ webpack
 npm install --save-dev @babel/plugin-transform-react-jsx
 vim webpack.config.js (moduel.rules: babel-loader: plugins)
 ```
+
+### JSX 的基本使用方法
+
+```js
+// main.js 中，在默认配置下,
+let a = <div/>
+// 被翻译成
+a = React.createElement()
+// 通过配置 pragma 属性可以更改翻译内容，如：createEelemnt
+a = createElement()
+```
