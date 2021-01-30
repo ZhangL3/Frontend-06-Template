@@ -23,15 +23,31 @@ class Carousel extends Component {
       this.root.appendChild(child);
     }
 
+    // 记录当前是第几张图
+    let position = 0;
     this.root.addEventListener("mousedown", event => {
-      console.log('mousedown: ', event);
+      let children = this.root.children;
+      let startX = event.clientX;
 
       let move = event => {
-        console.log('mousemove: ', event);
+        // event.clientX, event.clientY 浏览器可视区域的绝对位置
+        let x = event.clientX - startX;
+        for (let child of children) {
+          child.style.transition = 'none';
+          // 比如从第二张开始挪的话，就是 position * width + translate
+          child.style.transform = `translateX(${- position * 500 + x}px)`;
+        }
       }
 
       let up = event => {
-        console.log('mouseup: ', event);
+        let x = event.clientX - startX;
+        // 挪动超过 500 的一半就 +/- 1
+        position = position - Math.round(x / 500);
+        for (let child of children) {
+          child.style.transition = '';
+          // 比如从第二张开始挪的话，就是 position * width + translate
+          child.style.transform = `translateX(${- position * 500}px)`;
+        }
         // 监听 mousemove 和 mouseup 在 document 上
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
