@@ -32,10 +32,17 @@ class Carousel extends Component {
       let move = event => {
         // event.clientX, event.clientY 浏览器可视区域的绝对位置
         let x = event.clientX - startX;
-        for (let child of children) {
-          child.style.transition = 'none';
-          // 比如从第二张开始挪的话，就是 position * width + translate
-          child.style.transform = `translateX(${- position * 500 + x}px)`;
+
+        // 当前的中心元素 ( 取到 x 对 500 正数部分的运算 )
+        let current = position - (( x - x % 500 ) / 500);
+
+        // 把当前元素的前一后一都挪到正确的位置。为了避免奇特的 bug，可以算的范围大一些，比如：[-2, -1, 0, 1, 2]
+        for (let offset of [-1, 0, 1]) {
+          let pos = current + offset;
+          // pos 可能是负数，这里取绝对值
+          pos = ( pos + children.length ) % children.length;
+          children[pos].style.transition = 'none';
+          children[pos].style.transform = `translateX(${- pos * 500 + offset * 500 + x % 500}px)`;
         }
       }
 
@@ -43,11 +50,17 @@ class Carousel extends Component {
         let x = event.clientX - startX;
         // 挪动超过 500 的一半就 +/- 1
         position = position - Math.round(x / 500);
-        for (let child of children) {
-          child.style.transition = '';
-          // 比如从第二张开始挪的话，就是 position * width + translate
-          child.style.transform = `translateX(${- position * 500}px)`;
+
+        // 把当前元素的前一后一都挪到正确的位置
+        for (let offset of [0, -Math.sign( Math.round(x / 500) - x + 250 * Math.sign(x) )]) {
+          let pos = position + offset;
+          // pos 可能是负数，这里取绝对值
+          pos = ( pos + children.length ) % children.length;
+          children[pos].style.transition = '';
+          children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`;
         }
+
+        
         // 监听 mousemove 和 mouseup 在 document 上
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
