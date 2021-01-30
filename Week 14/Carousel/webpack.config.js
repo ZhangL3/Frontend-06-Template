@@ -9,6 +9,7 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
+    watchContentBase: true,
   },
   module: {
     rules: [

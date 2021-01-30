@@ -1,4 +1,23 @@
-
+<head>
+  <style>
+    /* carousel 下的 div 只有 500 * 280 大， 超出部分隐藏 */
+    .carousel {
+      overflow: hidden;
+      width: 500px;
+      height: 280px;
+      /* 不换行 */
+      white-space: nowrap;
+    }
+    .carousel>div {
+      width: 500px;
+      height: 280px;
+      /* 横排 */
+      display: inline-block;
+      background-size: contain;
+      transition: ease 0.5s;
+    }
+  </style>
+</head>
 <body>
   <script src="./main.js"></script>
   
