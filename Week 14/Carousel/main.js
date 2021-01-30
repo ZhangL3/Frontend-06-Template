@@ -23,7 +23,28 @@ class Carousel extends Component {
       this.root.appendChild(child);
     }
 
-    let currentIndex = 0;
+    this.root.addEventListener("mousedown", event => {
+      console.log('mousedown: ', event);
+
+      let move = event => {
+        console.log('mousemove: ', event);
+      }
+
+      let up = event => {
+        console.log('mouseup: ', event);
+        // 监听 mousemove 和 mouseup 在 document 上
+        document.removeEventListener("mousemove", move);
+        document.removeEventListener("mouseup", up);
+      }
+
+      document.addEventListener("mousemove", move);
+
+      document.addEventListener("mouseup", up);
+    });
+
+    
+    // 自动播放
+    /* let currentIndex = 0;
     setInterval(() => {
       let children = this.root.children;
       // 用求余的方法实现循环
@@ -47,7 +68,7 @@ class Carousel extends Component {
 
         currentIndex = nextIndex;
       }, 16);
-    }, 3000);
+    }, 3000); */
 
     return this.root;
   }
