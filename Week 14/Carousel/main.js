@@ -23,6 +23,7 @@ class Carousel extends Component {
       this.root.appendChild(child);
     }
 
+    // 鼠标拖拽
     // 记录当前是第几张图
     let position = 0;
     this.root.addEventListener("mousedown", event => {
@@ -31,9 +32,10 @@ class Carousel extends Component {
 
       let move = event => {
         // event.clientX, event.clientY 浏览器可视区域的绝对位置
+        // 拖拽了的距离
         let x = event.clientX - startX;
 
-        // 当前的中心元素 ( 取到 x 对 500 正数部分的运算 )
+        // 当前的中心元素 ( 取 x 除以 500 整数部分的运算 )
         let current = position - (( x - x % 500 ) / 500);
 
         // 把当前元素的前一后一都挪到正确的位置。为了避免奇特的 bug，可以算的范围大一些，比如：[-2, -1, 0, 1, 2]
@@ -42,7 +44,7 @@ class Carousel extends Component {
           // pos 可能是负数，这里取绝对值
           pos = ( pos + children.length ) % children.length;
           children[pos].style.transition = 'none';
-          children[pos].style.transform = `translateX(${- pos * 500 + offset * 500 + x % 500}px)`;
+          children[pos].style.transform = `translateX(${- pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */}px)`;
         }
       }
 
@@ -51,7 +53,7 @@ class Carousel extends Component {
         // 挪动超过 500 的一半就 +/- 1
         position = position - Math.round(x / 500);
 
-        // 把当前元素的前一后一都挪到正确的位置
+        // 把当前元素的前一或者后一都挪到正确的位置(根据鼠标拖动的方向)
         for (let offset of [0, -Math.sign( Math.round(x / 500) - x + 250 * Math.sign(x) )]) {
           let pos = position + offset;
           // pos 可能是负数，这里取绝对值
