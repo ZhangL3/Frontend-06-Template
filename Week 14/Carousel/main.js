@@ -53,11 +53,16 @@ class Carousel extends Component {
         // 挪动超过 500 的一半就 +/- 1
         position = position - Math.round(x / 500);
 
-        // 把当前元素的前一或者后一都挪到正确的位置(根据鼠标拖动的方向)
+        // 把当前元素和当前元素的的前一或者后一都挪到正确的位置(根据鼠标拖动的方向)
         for (let offset of [0, -Math.sign( Math.round(x / 500) - x + 250 * Math.sign(x) )]) {
           let pos = position + offset;
           // pos 可能是负数，这里取绝对值
           pos = ( pos + children.length ) % children.length;
+          // 更新 position 为 pos，避免 position 不断的加减，超出 children 的范围
+          if (offset === 0) {
+            position = pos;
+          }
+
           children[pos].style.transition = '';
           children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`;
         }
