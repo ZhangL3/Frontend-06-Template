@@ -93,7 +93,7 @@ class Carousel extends Component {
         // transition 这里置为空， CSS 里就会生效
         next.style.transition = "";
         // 把 current 向左挪出显示区域
-        current.style.transform = `translateX(${-100 - nextIndex * 100}%)`
+        current.style.transform = `translateX(${-100 - currentIndex * 100}%)`
         // 把 next 向左挪入显示区域
         next.style.transform = `translateX(${-nextIndex * 100}%)`
 
