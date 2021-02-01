@@ -32,6 +32,8 @@ class Carousel extends Component {
       let children = this.root.children;
       let startX = event.clientX;
 
+      event.preventDefault();
+
       let move = event => {
         // event.clientX, event.clientY 浏览器可视区域的绝对位置
         // 拖拽了的距离
