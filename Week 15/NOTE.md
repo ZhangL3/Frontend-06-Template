@@ -60,3 +60,5 @@ export class Timeline {
 
 * 属性动画： 改变属性
 * 帧动画： 一张一张的图片
+
+#### 使 Timeline 能动态添加 animation

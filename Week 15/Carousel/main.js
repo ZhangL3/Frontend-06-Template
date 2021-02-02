@@ -15,6 +15,11 @@ let a = <Carousel src={d}/>;
 a.mountTo(document.body);
 
 let tl = new Timeline();
+
+window.tl = tl;
+window.animation = new Animation({set a (v) { console.log('v: ', v);}}, "a", 0, 100, 1000, null);
+// 在浏览器中动态添加动画 tl.add(animation);
+
 // set a 对象的的值的时候，打印设置的值
-tl.add(new Animation({set a (v) { console.log('v: ', v);}}, "a", 0, 100, 1000, null));
+// tl.add(new Animation({set a (v) { console.log('v: ', v);}}, "a", 0, 100, 1000, null));
 tl.start();
