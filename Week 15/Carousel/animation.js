@@ -2,6 +2,8 @@ const TICK = Symbol("tick");
 const TICK_HANDLER = Symbol("tick-handler");
 const ANIMATIONS = Symbol("animations");
 const START_TIME = Symbol("start-time");
+const PAUSE_START = Symbol("pause-start");
+const PAUSE_TIME = Symbol("pause-time");
 
 export class Timeline {
   constructor() {
@@ -12,6 +14,8 @@ export class Timeline {
   start() {
     // 开始时的时间点
     let startTime = Date.now();
+
+    this[PAUSE_TIME] = 0;
 
     /**
      * 被作为 callback 传给 requestAnimationFrame
@@ -29,11 +33,13 @@ export class Timeline {
         if (this[START_TIME].get(animation) < startTime ) {
           // 运行的时间为现在减去时间线开始运行的时刻
           // 时间线没开始运行动画反正也不动
-          t = now - startTime;
+          // 算动画运行时间的时候，要就去 pause 的时间
+          t = now - startTime - this[PAUSE_TIME];
         } else {
           // 如果动画加入时间时在时间线开始之后
           // 动画运行时间为现在减去动画加入的时刻
-          t = now - this[START_TIME].get(animation);
+          // 算动画运行时间的时候，要就去 pause 的时间
+          t = now - this[START_TIME].get(animation) - this[PAUSE_TIME];
         }
         if(animation.duration < t) {
           // 删除不需要继续执行的动画
@@ -46,7 +52,7 @@ export class Timeline {
       }
 
       // 每一次的浏览器刷新一帧的时候，执行一次 TICK
-      requestAnimationFrame(this[TICK]);
+      this[TICK_HANDLER] = requestAnimationFrame(this[TICK]);
     }
 
     // 执行第一次 TICK
@@ -54,11 +60,17 @@ export class Timeline {
   }
 
   pause() {
-
+    // pause 开始的时候，记录时间节点
+    this[PAUSE_START] = Date.now();
+    console.log('this[PAUSE_START]: ', this[PAUSE_START]);
+    cancelAnimationFrame(this[TICK_HANDLER]);
   }
 
   resume() {
-
+    // pause 结束的时候，计算总 pause 的时间
+    this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
+    console.log('this[PAUSE_TIME]: ', this[PAUSE_TIME]);
+    this[TICK]();
   }
 
   reset() {
@@ -76,7 +88,7 @@ export class Timeline {
 }
 
 export class Animation {
-  constructor(object, property, startValue, endValue, duration, delay, timingFunction/**插值函数，从start到end是否平均 */) {
+  constructor(object, property, startValue, endValue, duration, delay, timingFunction/**插值函数，从start到end是否平均 */, template) {
     this.object = object;
     this.property = property;
     this.startValue = startValue;
@@ -84,6 +96,7 @@ export class Animation {
     this.duration = duration;
     this.delay = delay;
     this.timingFunction = timingFunction;
+    this.template = template;
   }
 
   /**
@@ -94,6 +107,6 @@ export class Animation {
     console.log('time: ', time);
     let range = ( this.endValue - this.startValue );
     // 以 0 到 100 为一个周期, 在 1000 的时长中做循环
-    this.object[this.property] = this.startValue + range * time / this.duration;
+    this.object[this.property] = this.template(this.startValue + range * time / this.duration);
   }
 }
