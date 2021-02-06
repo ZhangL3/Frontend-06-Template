@@ -80,3 +80,17 @@ export class Timeline {
 * timing function
 
 #### 对时间线进行状态管理
+
+* 给 Timeline 添加 state
+
+#### 手势的基本只是
+
+* start
+  * -end-> tap
+  * -移动10px-> pan start
+    * -move-> pan <循环>
+      * -end-> pan end
+      * -end且速度>?-> flick(swipe)
+  * -0.5s-> press start
+    * -移动10px-> pan start
+    * -end-> press end
