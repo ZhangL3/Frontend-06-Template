@@ -77,7 +77,13 @@ export class Timeline {
   }
 
   reset() {
-
+    this.pause();
+    let startTime = Date.now();
+    this[PAUSE_TIME] = 0;
+    this[ANIMATIONS] = new Set();
+    this[START_TIME] = new Map();
+    this[PAUSE_START] = 0;
+    this[TICK_HANDLER] = null;
   }
 
   add(animation, startTime) {
