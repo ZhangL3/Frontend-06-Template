@@ -116,3 +116,5 @@ export class Timeline {
 #### 实现一个 flick 事件
 
 利用 touchmove 事件最后半秒内的点和结束的点，通过时间和距离比计算出移动速度，超过 1,5 像素每毫秒判定为 flick
+
+#### 封装
