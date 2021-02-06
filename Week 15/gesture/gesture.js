@@ -78,7 +78,7 @@ element.addEventListener("touchstart", event => {
 element.addEventListener("touchmove", event => {
   for(let touch of event.changedTouches) {
     // console.log('touchmove: ', touch.clientX, touch.clientY);
-    let context = contexts.get(event.identifier);
+    let context = contexts.get(touch.identifier);
     move(touch, context);
   }
 })
@@ -105,6 +105,11 @@ let start = (point, context) => {
   // console.log('start: ', point.clientX, point.clientY);
   context.startX = point.clientX;
   context.startY = point.clientY;
+  context.points = [{
+    t: Date.now(),
+    x: point.clientX,
+    y: point.clientY,
+  }];
 
   context.isTap = true;
   context.isPan = false;
@@ -138,6 +143,14 @@ let move = (point, context) => {
     clearTimeout(handler);
   }
 
+  // 只存储半秒内的点，作为判断是否为 flick 因素
+  context.points = context.points.filter(point => Date.now() - point.t < 500);
+  context.points.push({
+    t: Date.now(),
+    x: point.clientX,
+    y: point.clientY,
+  });
+
 }
 
 let end = (point, context) => {
@@ -154,7 +167,28 @@ let end = (point, context) => {
   if(context.isPress) {
     console.log('pressend');
   }
-  console.log('end: ', point.clientX, point.clientY);
+
+  context.points = context.points.filter(point => Date.now() - point.t < 500);
+  let d, v;
+  // 因为最后一个记录点可能不在半秒之内，所有 points 可能为空
+  if (!context.points.length) {
+    v = 0;
+  } else {
+    // 计算移动的距离
+    d = Math.sqrt(( point.clientX - context.points[0].x ) ** 2 +
+      ( point.clientY - context.points[0].y ) ** 2);
+    // 计算速度
+    v = d / (Date.now() - context.points[0].t);
+  }
+  console.log('v: ', v);
+  // 单位:像素每毫秒
+  if (v > 1.5) {
+    console.log('flick: ');
+    context.isFlick = true;
+  } else {
+    isFlick = false;
+  }
+  // console.log('end: ', point.clientX, point.clientY);
 }
 
 let cancel = (point, context) => {
