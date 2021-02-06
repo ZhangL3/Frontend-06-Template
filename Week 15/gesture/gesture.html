@@ -1,4 +1,7 @@
 <script src="./gesture.js"></script>
-<body oncontextmenu="event.preventDefault()">
-  
-</body>
+<body oncontextmenu="event.preventDefault()"></body>
+<script>
+  document.documentElement.addEventListener("tap", (event) => {
+    console.log('tap event: ', event);
+  })
+</script>

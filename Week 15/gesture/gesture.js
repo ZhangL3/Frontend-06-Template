@@ -48,15 +48,15 @@ element.addEventListener("mousedown", event => {
     contexts.delete("mouse" + (1 << event.button));
 
     if(event.buttons === 0) {
-      element.removeEventListener("mousemove", mousemove);
-      element.removeEventListener("mouseup", mouseup);
+      document.removeEventListener("mousemove", mousemove);
+      document.removeEventListener("mouseup", mouseup);
       isListeningMouse = false;
     }
   };
 
   if (!isListeningMouse) {
-    element.addEventListener("mousemove", mousemove);
-    element.addEventListener("mouseup", mouseup);
+    document.addEventListener("mousemove", mousemove);
+    document.addEventListener("mouseup", mouseup);
 
     isListeningMouse = true;
   }
@@ -86,7 +86,7 @@ element.addEventListener("touchmove", event => {
 element.addEventListener("touchend", event => {
   for(let touch of event.changedTouches) {
     // console.log('touchend: ', touch.clientX, touch.clientY);
-    let context = contexts.get(event.identifier);
+    let context = contexts.get(touch.identifier);
     end(touch, context);
     contexts.delete(touch.identifier);
   }
@@ -143,6 +143,7 @@ let move = (point, context) => {
 let end = (point, context) => {
   if(context.isTap) {
     console.log('Tap');
+    dispatch("tap", {});
     clearTimeout(context.handler);
   }
 
@@ -159,4 +160,12 @@ let end = (point, context) => {
 let cancel = (point, context) => {
   console.log('cancel: ', point.clientX, point.clientY);
   clearTimeout(context.handler);
+}
+
+function dispatch(type, properties) {
+  let event = new Event("tap");
+  for(let name in properties) {
+    event[name] = properties[name];
+  }
+  element.dispatchEvent(event);
 }
