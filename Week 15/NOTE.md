@@ -73,3 +73,10 @@ export class Timeline {
 1. pause 的时候记下暂停这一刻的时间点: pause-start
 2. resume 的时候累加下暂停的时间： pause-time += Date.now() - pause-start
 3. 计算动画时长的时候减去 pause-time：动画时长 = Date.now() - pause-time
+
+#### 完善动画的其他功能
+
+* delay
+* timing function
+
+#### 对时间线进行状态管理

@@ -7,11 +7,16 @@ const PAUSE_TIME = Symbol("pause-time");
 
 export class Timeline {
   constructor() {
+    this.state = "inited";
     this[ANIMATIONS] = new Set();
     this[START_TIME] = new Map();
   }
 
   start() {
+    if (this.state !== "inited") {
+      return;
+    }
+    this.state = "started";
     // 开始时的时间点
     let startTime = Date.now();
 
@@ -63,6 +68,10 @@ export class Timeline {
   }
 
   pause() {
+    if (this.state !== "started") {
+      return;
+    }
+    this.state = "paused";
     // pause 开始的时候，记录时间节点
     this[PAUSE_START] = Date.now();
     console.log('this[PAUSE_START]: ', this[PAUSE_START]);
@@ -70,6 +79,11 @@ export class Timeline {
   }
 
   resume() {
+    if (this.state !== "paused") {
+      return;
+    }
+    this.state = "started";
+
     // pause 结束的时候，计算总 pause 的时间
     this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
     console.log('this[PAUSE_TIME]: ', this[PAUSE_TIME]);
@@ -78,6 +92,7 @@ export class Timeline {
 
   reset() {
     this.pause();
+    this.state = "inited";
     let startTime = Date.now();
     this[PAUSE_TIME] = 0;
     this[ANIMATIONS] = new Set();
