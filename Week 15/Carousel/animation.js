@@ -98,8 +98,8 @@ export class Animation {
     this.endValue = endValue;
     this.duration = duration;
     this.delay = delay;
-    this.timingFunction = timingFunction;
-    this.template = template;
+    this.timingFunction = timingFunction || ( v => v );
+    this.template = template || ( v => v );
   }
 
   /**
@@ -109,7 +109,8 @@ export class Animation {
   receive(time) {
     console.log('time: ', time);
     let range = ( this.endValue - this.startValue );
+    let progress = this.timingFunction(time / this.duration);
     // 以 0 到 100 为一个周期, 在 1000 的时长中做循环
-    this.object[this.property] = this.template(this.startValue + range * time / this.duration);
+    this.object[this.property] = this.template(this.startValue + range * progress);
   }
 }
