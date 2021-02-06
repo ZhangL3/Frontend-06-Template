@@ -34,12 +34,12 @@ export class Timeline {
           // 运行的时间为现在减去时间线开始运行的时刻
           // 时间线没开始运行动画反正也不动
           // 算动画运行时间的时候，要就去 pause 的时间
-          t = now - startTime - this[PAUSE_TIME];
+          t = now - startTime - this[PAUSE_TIME] - animation.delay;
         } else {
           // 如果动画加入时间时在时间线开始之后
           // 动画运行时间为现在减去动画加入的时刻
           // 算动画运行时间的时候，要就去 pause 的时间
-          t = now - this[START_TIME].get(animation) - this[PAUSE_TIME];
+          t = now - this[START_TIME].get(animation) - this[PAUSE_TIME] - animation.delay;
         }
         if(animation.duration < t) {
           // 删除不需要继续执行的动画
@@ -47,8 +47,11 @@ export class Timeline {
           t = animation.duration;
         }
 
-        // 把值传给给动画
-        animation.receive(t);
+        // 因为有 delay，所以 t 可能使负数。t > 0 时就是 delay 结束的时刻
+        if (t > 0) {
+          // 把值传给给动画
+          animation.receive(t);
+        }
       }
 
       // 每一次的浏览器刷新一帧的时候，执行一次 TICK
