@@ -83,7 +83,7 @@ export class Timeline {
 
 * 给 Timeline 添加 state
 
-#### 手势的基本只是
+#### 手势的基本知识
 
 * start
   * -end-> tap
@@ -94,3 +94,17 @@ export class Timeline {
   * -0.5s-> press start
     * -移动10px-> pan start
     * -end-> press end
+
+#### 实现鼠标操作
+
+* 添加 mousedown, mousemove, mouseup 事件
+
+#### 实现手势的逻辑
+
+* 添加 touchstart, touchmove, touchend, touchcancel 事件
+* 实现 tap, pan, press 的事件
+* 统一鼠标和触屏 start, move, end, cancel 功能
+
+#### 处理鼠标事件
+
+因为鼠标事件和触屏事件都不是单一维度的，鼠标分左右键，触屏有多指操作，所有触发事件的状态不能在全局保存，要作为 context 传给 start, move, end, cancel 功能
