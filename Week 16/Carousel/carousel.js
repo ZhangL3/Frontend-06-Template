@@ -29,12 +29,32 @@ export class Carousel extends Component {
     let timeline = new Timeline();
     timeline.start();
 
+    // 储存自动播放的动作，用于取消 setInterval
+    let handler = null;
+
     let children = this.root.children;
 
     let position = 0;
+
+    // 手势加入的时间点
+    let t = 0;
+    // 动画造成的位移
+    let ax = 0;
+
+    this.root.addEventListener("start", event => {
+      // 暂停时间线
+      timeline.pause();
+      // 暂停主备下一张图片
+      clearInterval(handler);
+      // 计算动画播放的进度
+      let progress = (Date.now() - t) / 1500;
+      ax = ease(progress) * 500 - 500;
+      
+    })
     
     this.root.addEventListener("pan", event => {
-      let x = event.clientX - event.startX;
+      // 计算拖住偏移时，要减去动画造成的偏移
+      let x = event.clientX - event.startX - ax;
       let current = position - (( x - x % 500 ) / 500);
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
@@ -122,7 +142,7 @@ export class Carousel extends Component {
 
     
     // 自动播放
-    setInterval(() => {
+    let nextPicture = () => {
       let children = this.root.children;
       // 用求余的方法实现循环
       let nextIndex = (position + 1) % children.length;
@@ -130,18 +150,23 @@ export class Carousel extends Component {
       let current = children[position];
       let next = children[nextIndex];
 
+      // 保存动画开始的时间
+      t = Date.now();
+
       // next 移动到 current 后的动作不需要 animation
-      next.style.transition = "none";
+      // next.style.transition = "none";
       // 把 next 移动到显示区域右侧
-      next.style.transform = `translateX(${500 - nextIndex * 500}px)`;
+      // next.style.transform = `translateX(${500 - nextIndex * 500}px)`;
 
       timeline.add(new Animation(current.style, "transform",
-        - position * 500, - 500 - position * 500, 500, 0, ease, v => `translateX(${v}px)`));
+        - position * 500, - 500 - position * 500, 1500, 0, ease, v => `translateX(${v}px)`));
       timeline.add(new Animation(next.style, "transform",
-        500 - nextIndex * 500, - nextIndex * 500, 500, 0, ease, v => `translateX(${v}px)`));
+        500 - nextIndex * 500, - nextIndex * 500, 1500, 0, ease, v => `translateX(${v}px)`));
 
       position = nextIndex;
-    }, 3000);
+    };
+
+    handler = setInterval(nextPicture, 3000);
 
     return this.root;
   }

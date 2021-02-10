@@ -165,6 +165,16 @@ export class Recognizer {
   start(point, context) {
     context.startX = point.clientX;
     context.startY = point.clientY;
+
+    /**
+     * 触发 start 事件，传入开始位置
+     * 鼠标点击或者手触碰就会触发 start
+     */
+    this.dispatcher.dispatch("start", {
+      clientX: point.clientX,
+      clientY: point.clientY,
+    })
+    
     context.points = [{
       t: Date.now(),
       x: point.clientX,
