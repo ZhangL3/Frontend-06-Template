@@ -50,8 +50,6 @@ export class Carousel extends Component {
       // 计算动画播放的进度
       let progress = (Date.now() - t) / 1500;
       ax = ease(progress) * 500 - 500;
-      console.log('start position: ', position);
-      
     })
     
     this.root.addEventListener("pan", event => {
@@ -59,21 +57,19 @@ export class Carousel extends Component {
       let x = event.clientX - event.startX - ax;
       let current = position - (( x - x % 500 ) / 500);
 
-      console.log('current: ', current);
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
         // pos 可能是负数，先取余，肯定小于 length，在加 length, 再取余，先当与取正余数
         pos = ( pos % children.length + children.length ) % children.length;
-        console.log('pos: ', pos);
+        // console.log('pos: ', pos);
         children[pos].style.transition = 'none';
         children[pos].style.transform = `translateX(${- pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */}px)`;
       }
 
-      console.log('pan position: ', position);
-
     })
 
-    this.root.addEventListener("panend", event => {
+    // 监听 end 事件，因为按住不动再松手的话不会触发 panend
+    this.root.addEventListener("end", event => {
       // 重新打开时间线
       timeline.reset();
       timeline.start();
@@ -84,6 +80,15 @@ export class Carousel extends Component {
 
       // 结束时取整，因该为 -1 || 0 || 1
       let direction = Math.round((x % 500) / 500);
+
+      if (event.isFlick) {
+        if (event.velocity > 0) {
+          // 取上界
+          direction = Math.ceil((x % 500) / 500);
+        } else {
+          direction = Math.floor((x % 500) / 500);
+        }
+      }
       
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
@@ -97,7 +102,7 @@ export class Carousel extends Component {
           1500, 0, ease, v => `translateX(${v}px)`));
       }
 
-      // 减掉 x 的整数部分
+      // 减掉 x / 500 的整数部分
       position = position - ((x - x % 500) / 500) - direction;
       // 拖拽比较远，可能是负数，重新算为正数
       position = ( position % children.length + children.length ) % children.length;
