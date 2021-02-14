@@ -24,10 +24,11 @@ export function createElement(type, attributes, ...children) {
 
 export class Component {
   constructor(type) {
+    this.attributes = Object.create(null);
   }
 
   setAttribute(name, value) {
-    this.root.setAttribute(name, value);
+    this.attributes[name] = value;
   }
 
   appendChild(child) {
@@ -35,6 +36,9 @@ export class Component {
   }
 
   mountTo(parent) {
+    if (!this.root) {
+      this.render();
+    }
     parent.appendChild(this.root);
   }
 }

@@ -11,3 +11,8 @@
   * 利用 end 事件处理手势结束后的事情
     * 手势结束后，要恢复 Timleline 和 nextPicture
     * 判断 isFlick，根据 velocity 处理滚动方向
+
+## 优化组件
+
+* 判断哪些变量可以被用户触及（优化变量的作用域）
+* 判断哪些通用属性可以挪到 component 组件里

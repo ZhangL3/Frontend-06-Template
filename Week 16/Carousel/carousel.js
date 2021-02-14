@@ -9,10 +9,6 @@ import { ease } from './ease';
 export class Carousel extends Component {
   constructor() {
     super();
-    this.attributes = Object.create(null);
-  }
-  setAttribute(name, value) {
-    this.attributes[name] = value;
   }
 
   render() {
@@ -191,9 +187,5 @@ export class Carousel extends Component {
     handler = setInterval(nextPicture, 3000);
 
     return this.root;
-  }
-
-  mountTo(parent) {
-    parent.appendChild(this.render());
   }
 }
