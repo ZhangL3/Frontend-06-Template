@@ -34,6 +34,7 @@ export class Carousel extends Component {
 
     let children = this.root.children;
 
+    // 第几张图片
     let position = 0;
 
     // 手势加入的时间点
@@ -49,6 +50,7 @@ export class Carousel extends Component {
       // 计算动画播放的进度
       let progress = (Date.now() - t) / 1500;
       ax = ease(progress) * 500 - 500;
+      console.log('start position: ', position);
       
     })
     
@@ -56,34 +58,49 @@ export class Carousel extends Component {
       // 计算拖住偏移时，要减去动画造成的偏移
       let x = event.clientX - event.startX - ax;
       let current = position - (( x - x % 500 ) / 500);
+
+      console.log('current: ', current);
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
         // pos 可能是负数，先取余，肯定小于 length，在加 length, 再取余，先当与取正余数
         pos = ( pos % children.length + children.length ) % children.length;
+        console.log('pos: ', pos);
         children[pos].style.transition = 'none';
         children[pos].style.transform = `translateX(${- pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */}px)`;
       }
+
+      console.log('pan position: ', position);
+
     })
 
     this.root.addEventListener("panend", event => {
-      let x = event.clientX - event.startX;
-      // 挪动超过 500 的一半就 +/- 1
-      position = position - Math.round(x / 500);
+      // 重新打开时间线
+      timeline.reset();
+      timeline.start();
+      handler = setInterval(nextPicture, 3000);
+      
+      let x = event.clientX - event.startX - ax;
+      let current = position - ((x - x % 500) / 500);
 
-      // 把当前元素和当前元素的的前一或者后一都挪到正确的位置(根据鼠标拖动的方向)
-      for (let offset of [0, -Math.sign( Math.round(x / 500) - x + 250 * Math.sign(x) )]) {
-        let pos = position + offset;
-        // pos 可能是负数，这里取绝对值
-        pos = ( pos + children.length ) % children.length;
-        // 更新 position 为 pos，避免 position 不断的加减，超出 children 的范围
-        if (offset === 0) {
-          position = pos;
-        }
+      // 结束时取整，因该为 -1 || 0 || 1
+      let direction = Math.round((x % 500) / 500);
+      
+      for (let offset of [-1, 0, 1]) {
+        let pos = current + offset;
+        // pos 可能是负数，先取余，肯定小于 length，在加 length, 再取余，先当与取正余数
+        pos = ( pos % children.length + children.length ) % children.length;
 
-        children[pos].style.transition = '';
-        children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`;
+        children[pos].style.transition = 'none';
+        timeline.add(new Animation(children[pos].style, "transform",
+          - pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */,
+          - pos * 500 + offset * 500 + direction * 500,
+          1500, 0, ease, v => `translateX(${v}px)`));
       }
 
+      // 减掉 x 的整数部分
+      position = position - ((x - x % 500) / 500) - direction;
+      // 拖拽比较远，可能是负数，重新算为正数
+      position = ( position % children.length + children.length ) % children.length;
     })
 
     // this.root.addEventListener("mousedown", event => {

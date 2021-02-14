@@ -74,7 +74,7 @@ export class Timeline {
     this.state = "paused";
     // pause 开始的时候，记录时间节点
     this[PAUSE_START] = Date.now();
-    console.log('this[PAUSE_START]: ', this[PAUSE_START]);
+    // console.log('this[PAUSE_START]: ', this[PAUSE_START]);
     cancelAnimationFrame(this[TICK_HANDLER]);
   }
 
@@ -86,7 +86,7 @@ export class Timeline {
 
     // pause 结束的时候，计算总 pause 的时间
     this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
-    console.log('this[PAUSE_TIME]: ', this[PAUSE_TIME]);
+    // console.log('this[PAUSE_TIME]: ', this[PAUSE_TIME]);
     this[TICK]();
   }
 
@@ -128,7 +128,7 @@ export class Animation {
    * @param {number} time 时长
    */
   receive(time) {
-    console.log('time: ', time);
+    // console.log('time: ', time);
     let range = ( this.endValue - this.startValue );
     let progress = this.timingFunction(time / this.duration);
     // 以 0 到 100 为一个周期, 在 1000 的时长中做循环

@@ -48,7 +48,7 @@ export class Listener {
        * 所以这里用移位后的值来作为 key
        */
       contexts.set("mouse" + (1 << event.button), context);
-      console.log("!!!!!!start: ", 1 << event.button);
+      // console.log("!!!!!!start: ", 1 << event.button);
       // 由 mouse event 触发 start()
       recognizer.start(event, context);
 
