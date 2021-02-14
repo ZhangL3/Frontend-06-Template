@@ -20,7 +20,7 @@ export class Carousel extends Component {
 
     for (let record of this[ATTRIBUTE].src) {
       let child = document.createElement("div");
-      child.style.backgroundImage = `url(${record})`;
+      child.style.backgroundImage = `url(${record.img})`;
       this.root.appendChild(child);
     }
 
@@ -49,6 +49,14 @@ export class Carousel extends Component {
       // 计算动画播放的进度
       let progress = (Date.now() - t) / 1500;
       ax = ease(progress) * 500 - 500;
+    })
+
+    this.root.addEventListener("tap", event => {
+      this.triggerEvent("click", {
+        data: this[ATTRIBUTE].src[this[STATE].position],
+        position: this[STATE].position,
+      });
+
     })
     
     this.root.addEventListener("pan", event => {
