@@ -12,7 +12,7 @@
     * 手势结束后，要恢复 Timleline 和 nextPicture
     * 判断 isFlick，根据 velocity 处理滚动方向
 
-## 优化组件
+## 为组件添加更多属性（一）
 
 * 判断哪些变量可以被用户触及（优化变量的作用域）
 * 判断哪些通用属性可以挪到 component 组件里
@@ -21,3 +21,10 @@
 * 给 carousel 添加 event 属性
   * onChange 返回 position （第几张图片）
   * onClick 导航到极客时间主页
+
+## 为组件添加更多属性（二）
+
+* 为组件添加 children 机制
+  * children 的类型
+    * 内容型 children: 放几个就有几个,以 button 为代表
+    * 模板型 children, jsx 里通过在 children 里放一个函数来实现, 以 list 为代表

@@ -33,6 +33,10 @@ export class Component {
     this[STATE] = Object.create(null);
   }
 
+  render() {
+
+  }
+
   setAttribute(name, value) {
     this[ATTRIBUTE][name] = value;
   }
@@ -55,12 +59,14 @@ export class Component {
 
 class ElementWrapper extends Component{
   constructor(type) {
+    super();
     this.root = document.createElement(type);
   }
 }
 
 class TextWrapper extends Component{
   constructor(content) {
+    super();
     this.root = document.createTextNode(content);
   }
 }
