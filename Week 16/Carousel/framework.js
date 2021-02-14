@@ -1,4 +1,7 @@
 export function createElement(type, attributes, ...children) {
+  console.log('type: ', type);
+  console.log('attributes: ', attributes);
+  console.log('children: ', children);
   let element;
   // 区分是 html 自有的 tag, 还是自定义的类
   if (typeof type === "string") {
@@ -13,12 +16,21 @@ export function createElement(type, attributes, ...children) {
   }
 
   // 添加 children
-  for(let child of children) {
-    if (typeof child === "string") {
-      child = new TextWrapper(child);
+  let processChildren = (children) => {
+    for(let child of children) {
+      if ((typeof child === "object") && (child instanceof Array)) {
+        processChildren(child);
+        // child 有时是数组，continue 跳过
+        continue;
+      }
+      if (typeof child === "string") {
+        child = new TextWrapper(child);
+      }
+      console.log('child: ', child);
+      element.appendChild(child);
     }
-    element.appendChild(child);
   }
+  processChildren(children);
   return element;
 }
 
@@ -34,7 +46,7 @@ export class Component {
   }
 
   render() {
-
+    return this.root;
   }
 
   setAttribute(name, value) {
@@ -61,6 +73,9 @@ class ElementWrapper extends Component{
   constructor(type) {
     super();
     this.root = document.createElement(type);
+  }
+  setAttribute(name, value) {
+    this.root.setAttribute(name, value);
   }
 }
 
