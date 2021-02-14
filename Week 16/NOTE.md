@@ -18,3 +18,4 @@
 * 判断哪些通用属性可以挪到 component 组件里
 * 添加状态控制
   * 改造 position 到 STATE 上
+* 给 carousel 添加 onChange event

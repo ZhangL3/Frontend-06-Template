@@ -11,5 +11,5 @@ let d = [
   './cat4.jpg',
 ];
 
-let a = <Carousel src={d}/>;
+let a = <Carousel src={d} onChange={event => console.log('event: ', event)} />;
 a.mountTo(document.body);

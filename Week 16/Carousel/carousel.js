@@ -105,6 +105,10 @@ export class Carousel extends Component {
       this[STATE].position = this[STATE].position - ((x - x % 500) / 500) - direction;
       // 拖拽比较远，可能是负数，重新算为正数
       this[STATE].position = ( this[STATE].position % children.length + children.length ) % children.length;
+
+      // 结束手势时，触发 onChange，返回 position
+      this.triggerEvent("change", { position: this[STATE].position});
+
     })
     
     // 自动播放
@@ -119,17 +123,15 @@ export class Carousel extends Component {
       // 保存动画开始的时间
       t = Date.now();
 
-      // next 移动到 current 后的动作不需要 animation
-      // next.style.transition = "none";
-      // 把 next 移动到显示区域右侧
-      // next.style.transform = `translateX(${500 - nextIndex * 500}px)`;
-
       timeline.add(new Animation(current.style, "transform",
         - this[STATE].position * 500, - 500 - this[STATE].position * 501, 1500, 0, ease, v => `translateX(${v}px)`));
       timeline.add(new Animation(next.style, "transform",
         500 - nextIndex * 500, - nextIndex * 500, 1500, 0, ease, v => `translateX(${v}px)`));
 
       this[STATE].position = nextIndex;
+
+      // 自动播放时，切换到下一张图片时触发 onChange
+      this.triggerEvent("change", { position: this[STATE].position});
     };
 
     handler = setInterval(nextPicture, 3000);

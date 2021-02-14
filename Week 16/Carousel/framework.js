@@ -47,6 +47,10 @@ export class Component {
     }
     parent.appendChild(this.root);
   }
+  triggerEvent(type, args) {
+    // 正则 replace 可以传函数
+    this[ATTRIBUTE]["on" + type.replace(/^[\s\S]/, s => s.toUpperCase())](new CustomEvent(type, { detail: args }));
+  }
 }
 
 class ElementWrapper extends Component{
