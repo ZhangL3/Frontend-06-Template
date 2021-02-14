@@ -22,13 +22,19 @@ export function createElement(type, attributes, ...children) {
   return element;
 }
 
+// 类似于 protected
+export const STATE = Symbol("state");
+export const ATTRIBUTE = Symbol("attribute");
+
+
 export class Component {
   constructor(type) {
-    this.attributes = Object.create(null);
+    this[ATTRIBUTE] = Object.create(null);
+    this[STATE] = Object.create(null);
   }
 
   setAttribute(name, value) {
-    this.attributes[name] = value;
+    this[ATTRIBUTE][name] = value;
   }
 
   appendChild(child) {

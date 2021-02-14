@@ -1,7 +1,10 @@
-import { Component, createElement } from "./framework";
+import { Component, STATE, ATTRIBUTE } from "./framework";
 import { enableGesture } from "./gesture";
 import { Timeline, Animation } from "./animation";
 import { ease } from './ease';
+
+// STATE 也可以被用户继承
+export { STATE, ATTRIBUTE } from "./framework.js";
 
 /**
  * 自定义 Carousel 类
@@ -15,7 +18,7 @@ export class Carousel extends Component {
     this.root = document.createElement("div");
     this.root.classList.add("carousel");
 
-    for (let record of this.attributes.src) {
+    for (let record of this[ATTRIBUTE].src) {
       let child = document.createElement("div");
       child.style.backgroundImage = `url(${record})`;
       this.root.appendChild(child);
@@ -31,7 +34,7 @@ export class Carousel extends Component {
     let children = this.root.children;
 
     // 第几张图片
-    let position = 0;
+    this[STATE].position = 0;
 
     // 手势加入的时间点
     let t = 0;
@@ -51,7 +54,7 @@ export class Carousel extends Component {
     this.root.addEventListener("pan", event => {
       // 计算拖住偏移时，要减去动画造成的偏移
       let x = event.clientX - event.startX - ax;
-      let current = position - (( x - x % 500 ) / 500);
+      let current = this[STATE].position - (( x - x % 500 ) / 500);
 
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
@@ -72,7 +75,7 @@ export class Carousel extends Component {
       handler = setInterval(nextPicture, 3000);
       
       let x = event.clientX - event.startX - ax;
-      let current = position - ((x - x % 500) / 500);
+      let current = this[STATE].position - ((x - x % 500) / 500);
 
       // 结束时取整，因该为 -1 || 0 || 1
       let direction = Math.round((x % 500) / 500);
@@ -99,73 +102,18 @@ export class Carousel extends Component {
       }
 
       // 减掉 x / 500 的整数部分
-      position = position - ((x - x % 500) / 500) - direction;
+      this[STATE].position = this[STATE].position - ((x - x % 500) / 500) - direction;
       // 拖拽比较远，可能是负数，重新算为正数
-      position = ( position % children.length + children.length ) % children.length;
+      this[STATE].position = ( this[STATE].position % children.length + children.length ) % children.length;
     })
-
-    // this.root.addEventListener("mousedown", event => {
-    //   let children = this.root.children;
-    //   let startX = event.clientX;
-
-    //   event.preventDefault();
-
-    //   let move = event => {
-    //     // event.clientX, event.clientY 浏览器可视区域的绝对位置
-    //     // 拖拽了的距离
-    //     let x = event.clientX - startX;
-
-    //     // 当前的中心元素 ( 取 x 除以 500 整数部分的运算 )
-    //     let current = position - (( x - x % 500 ) / 500);
-
-    //     // 把当前元素的前一后一都挪到正确的位置。为了避免奇特的 bug，可以算的范围大一些，比如：[-2, -1, 0, 1, 2]
-    //     for (let offset of [-1, 0, 1]) {
-    //       let pos = current + offset;
-    //       // pos 可能是负数，这里取绝对值
-    //       pos = ( pos + children.length ) % children.length;
-    //       children[pos].style.transition = 'none';
-    //       children[pos].style.transform = `translateX(${- pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */}px)`;
-    //     }
-    //   }
-
-    //   let up = event => {
-    //     let x = event.clientX - startX;
-    //     // 挪动超过 500 的一半就 +/- 1
-    //     position = position - Math.round(x / 500);
-
-    //     // 把当前元素和当前元素的的前一或者后一都挪到正确的位置(根据鼠标拖动的方向)
-    //     for (let offset of [0, -Math.sign( Math.round(x / 500) - x + 250 * Math.sign(x) )]) {
-    //       let pos = position + offset;
-    //       // pos 可能是负数，这里取绝对值
-    //       pos = ( pos + children.length ) % children.length;
-    //       // 更新 position 为 pos，避免 position 不断的加减，超出 children 的范围
-    //       if (offset === 0) {
-    //         position = pos;
-    //       }
-
-    //       children[pos].style.transition = '';
-    //       children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`;
-    //     }
-
-        
-    //     // 监听 mousemove 和 mouseup 在 document 上
-    //     document.removeEventListener("mousemove", move);
-    //     document.removeEventListener("mouseup", up);
-    //   }
-
-    //   document.addEventListener("mousemove", move);
-
-    //   document.addEventListener("mouseup", up);
-    // });
-
     
     // 自动播放
     let nextPicture = () => {
       let children = this.root.children;
       // 用求余的方法实现循环
-      let nextIndex = (position + 1) % children.length;
+      let nextIndex = (this[STATE].position + 1) % children.length;
 
-      let current = children[position];
+      let current = children[this[STATE].position];
       let next = children[nextIndex];
 
       // 保存动画开始的时间
@@ -177,11 +125,11 @@ export class Carousel extends Component {
       // next.style.transform = `translateX(${500 - nextIndex * 500}px)`;
 
       timeline.add(new Animation(current.style, "transform",
-        - position * 500, - 500 - position * 500, 1500, 0, ease, v => `translateX(${v}px)`));
+        - this[STATE].position * 500, - 500 - this[STATE].position * 501, 1500, 0, ease, v => `translateX(${v}px)`));
       timeline.add(new Animation(next.style, "transform",
         500 - nextIndex * 500, - nextIndex * 500, 1500, 0, ease, v => `translateX(${v}px)`));
 
-      position = nextIndex;
+      this[STATE].position = nextIndex;
     };
 
     handler = setInterval(nextPicture, 3000);
