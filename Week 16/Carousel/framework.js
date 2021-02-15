@@ -4,9 +4,11 @@ export function createElement(type, attributes, ...children) {
   console.log('children: ', children);
   let element;
   // 区分是 html 自有的 tag, 还是自定义的类
+  // HTML 自有的 tag 就是用的 tagName， string
   if (typeof type === "string") {
     element = new ElementWrapper(type);
   } else {
+  // 自定义的 tag 的 type 是自定义类
     element = new type;
   }
 

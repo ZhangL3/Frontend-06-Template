@@ -25,12 +25,12 @@ let d = [
   },
 ];
 
-// let a = <Carousel
-//   src={d}
-//   onChange={ event => {/* console.log('event: ', event) */ }}
-//   onClick={event =>  window.location.href = event.detail.data.url}
-// />;
-// a.mountTo(document.body);
+let a = <Carousel
+  src={d}
+  onChange={ event => {/* console.log('event: ', event) */ }}
+  onClick={event =>  window.location.href = event.detail.data.url}
+/>;
+a.mountTo(document.body);
 
 // 内容型 children
 import { Button } from './Button';
