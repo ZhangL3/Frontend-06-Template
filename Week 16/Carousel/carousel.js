@@ -89,10 +89,11 @@ export class Carousel extends Component {
       let direction = Math.round((x % 500) / 500);
 
       if (event.isFlick) {
-        if (event.velocity > 0) {
+        if (event.clientX > event.startX) {
           // 取上界
           direction = Math.ceil((x % 500) / 500);
         } else {
+          // 取下界
           direction = Math.floor((x % 500) / 500);
         }
       }
