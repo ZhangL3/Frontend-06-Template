@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Test</title>
+</head>
+<body>
+  <script>
+    class Parent {
+      constructor(name) {
+        this.name = name;
+      }
+
+      // 自己没有 age，但相当于抽象类，继承父类的子类要有 age 属性
+      render() {
+        return this.age;
+      }
+    }
+
+    const parent = new Parent('Elten');
+    console.log('parent.render(): ', parent.render()); // undefined
+
+    class Children extends Parent{
+      constructor(name, age) {
+        super();
+        this.age = age;
+      }
+    }
+
+    const children = new Children('Kinder', 10);
+    console.log('children.render(): ', children.render()); // 10
+  </script>
+</body>
+</html>
