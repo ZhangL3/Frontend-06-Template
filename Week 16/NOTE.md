@@ -28,3 +28,7 @@
   * children 的类型
     * 内容型 children: 放几个就有几个,以 button 为代表
     * 模板型 children, jsx 里通过在 children 里放一个函数来实现, 以 list 为代表
+
+## Carousel 总结理解
+
+见 './Carousel/uml.drawio'
