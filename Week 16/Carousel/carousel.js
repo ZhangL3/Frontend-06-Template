@@ -100,7 +100,7 @@ export class Carousel extends Component {
       
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
-        // pos 可能是负数，先取余，肯定小于 length，在加 length, 再取余，先当与取正余数
+        // pos 可能是负数，先取余，肯定小于 length，在加 length, 再取余，相当于取正余数
         pos = ( pos % children.length + children.length ) % children.length;
 
         children[pos].style.transition = 'none';
