@@ -1,7 +1,9 @@
 var assert = require('assert');
-// import { add } from '../add';
-var add = require('../add').add;
-var mul = require('../add').mul;
+
+// var add = require('../add').add;
+// var mul = require('../add').mul;
+
+import { add, mul } from '../add';
 
 describe("add function testing", function () {
   it('1 + 2 should be 3', function () {

@@ -20,4 +20,8 @@
 ### code coverage
 
 * npm install nyc
-* ./node_modules/.bin/nyc ./node_modules/.bin/mocha --require @babel/register
+* 测试 commonjs 模块版本
+* ./node_modules/.bin/nyc ./node_modules/.bin/mocha ./test/test.js
+* 测试 ES6 模块版本
+  * .nycrc
+  * npm install @istanbuljs/nyc-config-babel babel-plugin-istanbul
