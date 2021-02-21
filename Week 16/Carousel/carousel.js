@@ -27,8 +27,7 @@ export class Carousel extends Component {
     enableGesture(this.root);
     let timeline = new Timeline();
     timeline.start();
-
-    // 储存自动播放的动作，用于取消 setInterval
+// 储存自动播放的动作，用于取消 setInterval
     let handler = null;
 
     let children = this.root.children;
@@ -40,15 +39,27 @@ export class Carousel extends Component {
     let t = 0;
     // 动画造成的位移
     let ax = 0;
+    // picture DURATION
+    let DURATION = 1500;
+    // picture WIDTH
+    let WIDTH = 500;
+    let NEXT_INTERVAL = 3000;
 
+    // start 和 panstart 的启动时间是有误差的，所以会存在 拖动快时 位置不准的情况
     this.root.addEventListener("start", event => {
       // 暂停时间线
       timeline.pause();
       // 暂停主备下一张图片
       clearInterval(handler);
       // 计算动画播放的进度
-      let progress = (Date.now() - t) / 1500;
-      ax = ease(progress) * 500 - 500;
+      if(Date.now() - t < DURATION) {
+          let progress = (Date.now() - t) / DURATION;
+          ax = ease(progress) * WIDTH - WIDTH;
+        }else{
+          // 如果图片在 DURATION 时间内已经滚出画面，但 nextPicture 还没被触发，progress 会大于 1
+          // ax 也会指向后面还没播放的位置，所以这里 ax 要清零
+          ax = 0
+        }
     })
 
     this.root.addEventListener("tap", event => {
@@ -62,7 +73,7 @@ export class Carousel extends Component {
     this.root.addEventListener("pan", event => {
       // 计算拖住偏移时，要减去动画造成的偏移
       let x = event.clientX - event.startX - ax;
-      let current = this[STATE].position - (( x - x % 500 ) / 500);
+      let current = this[STATE].position - (( x - x % WIDTH ) / WIDTH);
 
       for (let offset of [-1, 0, 1]) {
         let pos = current + offset;
@@ -70,7 +81,7 @@ export class Carousel extends Component {
         pos = ( pos % children.length + children.length ) % children.length;
         // console.log('pos: ', pos);
         children[pos].style.transition = 'none';
-        children[pos].style.transform = `translateX(${- pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */}px)`;
+        children[pos].style.transform = `translateX(${- pos * WIDTH/**当前图位置 */ + offset * WIDTH/**偏移量 */ + x % WIDTH/**鼠标当前挪动相对图画位置 */}px)`;
       }
 
     })
@@ -80,21 +91,21 @@ export class Carousel extends Component {
       // 重新打开时间线
       timeline.reset();
       timeline.start();
-      handler = setInterval(nextPicture, 3000);
+      handler = setInterval(nextPicture, NEXT_INTERVAL);
       
       let x = event.clientX - event.startX - ax;
-      let current = this[STATE].position - ((x - x % 500) / 500);
+      let current = this[STATE].position - ((x - x % WIDTH) / WIDTH);
 
       // 结束时取整，因该为 -1 || 0 || 1
-      let direction = Math.round((x % 500) / 500);
+      let direction = Math.round((x % WIDTH) / WIDTH);
 
       if (event.isFlick) {
         if (event.clientX > event.startX) {
           // 取上界
-          direction = Math.ceil((x % 500) / 500);
+          direction = Math.ceil((x % WIDTH) / WIDTH);
         } else {
           // 取下界
-          direction = Math.floor((x % 500) / 500);
+          direction = Math.floor((x % WIDTH) / WIDTH);
         }
       }
       
@@ -105,13 +116,13 @@ export class Carousel extends Component {
 
         children[pos].style.transition = 'none';
         timeline.add(new Animation(children[pos].style, "transform",
-          - pos * 500/**当前图位置 */ + offset * 500/**偏移量 */ + x % 500/**鼠标当前挪动相对图画位置 */,
-          - pos * 500 + offset * 500 + direction * 500,
-          1500, 0, ease, v => `translateX(${v}px)`));
+          - pos * WIDTH/**当前图位置 */ + offset * WIDTH/**偏移量 */ + x % WIDTH/**鼠标当前挪动相对图画位置 */,
+          - pos * WIDTH + offset * WIDTH + direction * WIDTH,
+          DURATION, 0, ease, v => `translateX(${v}px)`));
       }
 
       // 减掉 x / 500 的整数部分
-      this[STATE].position = this[STATE].position - ((x - x % 500) / 500) - direction;
+      this[STATE].position = this[STATE].position - ((x - x % WIDTH) / WIDTH) - direction;
       // 拖拽比较远，可能是负数，重新算为正数
       this[STATE].position = ( this[STATE].position % children.length + children.length ) % children.length;
 
@@ -133,9 +144,9 @@ export class Carousel extends Component {
       t = Date.now();
 
       timeline.add(new Animation(current.style, "transform",
-        - this[STATE].position * 500, - 500 - this[STATE].position * 501, 1500, 0, ease, v => `translateX(${v}px)`));
+        - this[STATE].position * WIDTH, - WIDTH - this[STATE].position * WIDTH, DURATION, 0, ease, v => `translateX(${v}px)`));
       timeline.add(new Animation(next.style, "transform",
-        500 - nextIndex * 500, - nextIndex * 500, 1500, 0, ease, v => `translateX(${v}px)`));
+        WIDTH - nextIndex * WIDTH, - nextIndex * WIDTH, DURATION, 0, ease, v => `translateX(${v}px)`));
 
       this[STATE].position = nextIndex;
 
@@ -143,7 +154,7 @@ export class Carousel extends Component {
       this.triggerEvent("change", { position: this[STATE].position});
     };
 
-    handler = setInterval(nextPicture, 3000);
+    handler = setInterval(nextPicture, NEXT_INTERVAL);
 
     return this.root;
   }
