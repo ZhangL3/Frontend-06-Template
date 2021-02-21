@@ -53,13 +53,13 @@ export class Carousel extends Component {
       clearInterval(handler);
       // 计算动画播放的进度
       if(Date.now() - t < DURATION) {
-          let progress = (Date.now() - t) / DURATION;
-          ax = ease(progress) * WIDTH - WIDTH;
-        }else{
-          // 如果图片在 DURATION 时间内已经滚出画面，但 nextPicture 还没被触发，progress 会大于 1
-          // ax 也会指向后面还没播放的位置，所以这里 ax 要清零
-          ax = 0
-        }
+        let progress = (Date.now() - t) / DURATION;
+        ax = ease(progress) * WIDTH - WIDTH;
+      }else{
+        // 如果图片在 DURATION 时间内已经滚出画面，但 nextPicture 还没被触发，progress 会大于 1
+        // ax 也会指向后面还没播放的位置，所以这里 ax 要清零
+        ax = 0
+      }
     })
 
     this.root.addEventListener("tap", event => {
