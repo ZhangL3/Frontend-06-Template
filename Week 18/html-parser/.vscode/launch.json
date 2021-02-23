@@ -1,21 +1,3 @@
-// {
-//   // Use IntelliSense to learn about possible attributes.
-//   // Hover to view descriptions of existing attributes.
-//   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-//   "version": "0.2.0",
-//   "configurations": [
-//     {
-//       "type": "pwa-node",
-//       "request": "launch",
-//       "name": "Launch Program",
-//       "skipFiles": [
-//         "<node_internals>/**"
-//       ],
-//       "program": "${file}"
-//     }
-//   ]
-// }
-
 {
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
@@ -24,16 +6,14 @@
   "configurations": [
     {
       "args": [
-        "-u",
-        "tdd",
-        "--timeout",
-        "999999",
-        "--colors",
-        "${workspaceFolder}/test",
-      ],
-      "runtimeArgs": [
         "--require",
         "@babel/register",
+        // "-u",
+        // "tdd",
+        // "--timeout",
+        // "999999",
+        // "--colors",
+        // "${workspaceFolder}/test"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests",
@@ -43,7 +23,7 @@
         "<node_internals>/**"
       ],
       "type": "pwa-node"
-    }
+    },
     // {
     //   "type": "node",
     //   "request": "launch",
