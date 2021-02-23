@@ -25,3 +25,10 @@
 * 测试 ES6 模块版本
   * .nycrc
   * npm install @istanbuljs/nyc-config-babel babel-plugin-istanbul
+
+### 对 html-parser 进行单元测试
+
+* 配置 mocha 和 nyc
+* 写一个最简单的测试用例
+* 看 Uncovered Lines 在哪里，找到对应逻辑
+* 添加测试用例
