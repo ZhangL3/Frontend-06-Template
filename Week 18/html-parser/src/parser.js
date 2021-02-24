@@ -4,10 +4,9 @@
 
 const EOF = Symbol('EOF'); // EOF: End Of File
 
+let stack;
 let currentToken = null;
 let currentAttribute = null;
-
-let stack = [{type: 'document', children: []}];
 let currentTextNode = null;
 
 // 加入一个新的函数, addCSSRules, 把 CSS 规则暂存到一个数组里
@@ -320,29 +319,6 @@ function attributeName(c) {
     }
 }
 
-function afterAttributeName(c) {
-    if (c.match(/^\t\n\f ]$/)) {
-        return afterAttributeName;
-    } else if (c === '/') {
-        return selfClosingStartTag;
-    }  else if (c === '=') {
-        return beforeAttributeValue;
-    } else if (c === '>') {
-        currentToken[currentAttribute.name] = currentAttribute.value;
-        emit(currentToken);
-        return data;
-    } else if (c === EOF) {
-
-    } else {
-        currentToken[currentAttribute.name] = currentAttribute.value;
-        currentAttribute = {
-            name: '',
-            value: '',
-        };
-        return attributeName(c);
-    }
-} 
-
 function beforeAttributeValue(c) {
     if (c.match(/^[\t\n\f ]$/) || c === '/' || c === '>' || c === EOF) {
         return beforeAttributeName;
@@ -425,6 +401,29 @@ function UnquotedAttributeValue(c) {
     }
 }
 
+function afterAttributeName(c) {
+    if (c.match(/^[\t\n\f ]$/)) {
+        return afterAttributeName;
+    } else if (c === '/') {
+        return selfClosingStartTag;
+    }  else if (c === '=') {
+        return beforeAttributeValue;
+    } else if (c === '>') {
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        emit(currentToken);
+        return data;
+    } else if (c === EOF) {
+
+    } else {
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        currentAttribute = {
+            name: '',
+            value: '',
+        };
+        return attributeName(c);
+    }
+} 
+
 function selfClosingStartTag(c) {
     if (c === '>') {
         currentToken.isSelfClosing = true;
@@ -438,6 +437,11 @@ function selfClosingStartTag(c) {
 }
 
 export function parseHTML(html) {
+    stack = [{type: 'document', children: []}];
+    currentToken = null;
+    currentAttribute = null;
+    currentTextNode = null;
+
     console.log(html);
     let state = data;
     for (let c of html) {
