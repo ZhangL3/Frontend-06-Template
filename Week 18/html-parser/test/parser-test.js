@@ -26,9 +26,57 @@ describe("parse html:", function () {
 
   it('<a href id></a>', function () {
     let tree = parseHTML('<a href id ></a>');
-    console.log('tree: ', tree);
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<a href="abc" id></a>', function () {
+    let tree = parseHTML('<a href="abc" id></a>');
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<a href=abc id></a>', function () {
+    let tree = parseHTML('<a href=abc id></a>');
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<a href=abc/>', function () {
+    let tree = parseHTML('<a href=abc/>');
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<a href=\'abc\'/>', function () {
+    let tree = parseHTML('<a href=\'abc\'/>');
+    // console.log('tree: ', tree);
     assert.strictEqual(tree.children.length, 1);
     assert.strictEqual(tree.children[0].children.length, 0);
   });
   
+  it('<a />', function () {
+    let tree = parseHTML('<a />');
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<A /> upper case', function () {
+    let tree = parseHTML('<A />');
+    // console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].children.length, 0);
+  });
+
+  it('<>', function () {
+    let tree = parseHTML('<>');
+    console.log('tree: ', tree);
+    assert.strictEqual(tree.children.length, 1);
+    assert.strictEqual(tree.children[0].type, "text");
+  });
 })

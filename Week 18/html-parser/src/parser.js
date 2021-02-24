@@ -235,7 +235,11 @@ function tagOpen(c) {
         };
         return tagName(c);
     } else {
-        return ;
+        emit({
+            type: 'text',
+            content: c
+        });
+        return data;
     }
 }
 
@@ -278,6 +282,7 @@ function tagName(c) {
         // 本标签解析完，开始解析下一个标签
         return data;
     } else {
+        currentToken.tagName = c;
         return tagName;
     }
 }
@@ -373,8 +378,7 @@ function afterQuotedAttributeValue(c) {
     } else if (c === EOF) {
 
     } else {
-        currentAttribute.value += c;
-        return doubleQuotedAttributeValue;
+        throw new Error("unexpected character \"" + c + "\"");
     }
 }
 
