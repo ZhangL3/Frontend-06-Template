@@ -32,3 +32,5 @@
 * 写一个最简单的测试用例
 * 看 Uncovered Lines 在哪里，找到对应逻辑
 * 添加测试用例
+* 配置 vscode debug config
+* 测试 coverage， func 100%， lines 90%
