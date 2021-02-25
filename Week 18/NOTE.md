@@ -34,3 +34,7 @@
 * 添加测试用例
 * 配置 vscode debug config
 * 测试 coverage， func 100%， lines 90%
+
+### 所有工具与 generator 的集成
+
+* 方法同 generator 章节

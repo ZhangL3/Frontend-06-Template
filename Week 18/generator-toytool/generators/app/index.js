@@ -55,13 +55,13 @@ module.exports = class extends Generator {
     ], { 'save-dev': true });
 
     this.fs.copyTpl(
-      this.templatePath('babelrc.'),
-      this.destinationPath('babelrc.'),
+      this.templatePath('.babelrc'),
+      this.destinationPath('.babelrc'),
       {}
     );
     this.fs.copyTpl(
-      this.templatePath('nycrc.'),
-      this.destinationPath('nycrc.'),
+      this.templatePath('.nycrc'),
+      this.destinationPath('.nycrc'),
       {}
     );
     this.fs.copyTpl(
