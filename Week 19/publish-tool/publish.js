@@ -1,7 +1,7 @@
 let http = require('http');
 let fs = require("fs");
 
-let file = fs.createReadStream("./package.json");
+let file = fs.createReadStream("./sample.html");
 
 let request = http.request({
   hostname: "127.0.0.1",
