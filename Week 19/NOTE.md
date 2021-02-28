@@ -21,3 +21,9 @@
     * scp -P 22 -r ./* lz@lz-server:/home/lz/server
 
 ### 用 node 启动一个简单的 server
+
+* 利用 publish-server 向真是服务器发布文件
+
+### 编写简单的发送请求功能
+
+* Request 和 Response 都是流
