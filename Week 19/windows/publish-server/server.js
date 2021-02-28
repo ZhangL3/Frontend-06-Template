@@ -6,13 +6,15 @@ http.createServer(function (request, response) {
 
   let outFile = fs.createWriteStream("./Week 19/server/public/index.html");
 
-  request.on('data', chunk => {
-    console.log('data: ', chunk.toString());
-    outFile.write(chunk);
-  })
+  request.pipe(outFile);
 
-  request.on('end', chunk => {
-    outFile.end();
-    console.log('success: ', chunk);
-  })
+  // request.on('data', chunk => {
+  //   console.log('data: ', chunk.toString());
+  //   outFile.write(chunk);
+  // })
+
+  // request.on('end', chunk => {
+  //   outFile.end();
+  //   console.log('success: ', chunk);
+  // })
 }).listen(8082);
