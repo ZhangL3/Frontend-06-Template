@@ -27,3 +27,5 @@
 ### 编写简单的发送请求功能
 
 * Request 和 Response 都是流
+
+### 简单了解 Node.js 的流
