@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server.js",
-    "publish": "scp -r -P 8022 ./* lezhang@192.168.177.230:/c/l3/Training/Frontend-06-Template/Week 19/ub-publish-server",
+    "publish": "scp -r -P 8022 ./* lezhang@192.168.177.230:/c/l3/Training/Frontend-06-Template/Week 19/ubuntu/publish-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
