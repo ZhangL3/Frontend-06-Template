@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "publish": "scp -r -P 8022 ./* lezhang@127.0.0.1:/c/l3/Training/Frontend-06-Template/Week 19/server",
     "start": "node ./bin/www"
   },
   "dependencies": {
