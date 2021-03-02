@@ -2,6 +2,7 @@ let http = require('http');
 let fs = require("fs");
 let archiver = require("archiver");
 let child_process = require("child_process")
+let querystring = require('querystring');
 
 // let file = fs.createReadStream("./sample.html");
 let request;
@@ -15,6 +16,36 @@ child_process.exec(
 
 
 // 3. 创建 server，接受 token，然后点击发布
+
+http.createServer(function (request, response) {
+  let query = querystring.parse(request.url.match(/^\/\?([\s\S]+)$/)[1]);
+  console.log('query: ', query);
+  publish(query.token);
+}).listen(8083);
+
+function publish(token) {
+  request = http.request({
+    hostname: "127.0.0.1",
+    port: 8882,
+    method: "post",
+    path: "/publish?token=" + token,
+    headers: {
+      'Content-Type': 'application/octet-stream',
+    }
+  }, response => {
+    console.log('response: ', response);
+  })
+
+  // 压缩文件夹并 pipe 给 request
+  const archive = archiver('zip', {
+    zlib: {level: 9}
+  });
+
+  archive.directory('./sample/', false);
+  archive.finalize();
+  archive.pipe(request);
+}
+
 
 // request to locolhost
 // let request = http.request({
