@@ -20,7 +20,7 @@
 
 1. 通过 GitHook 完场检查
 2. ESLint
-3. PhantomJS 无头浏览器检查
+3. Puppeteer 无头浏览器检查
 
 ### Git Hook 基本用法
 
@@ -41,5 +41,12 @@
   * 检查 buffer 版本，而不是 local 版本
     * git stash push -k
     * git stash pop
-* Web Hook
+* Web Hook (服务端)
   * GitLab, GitHub 自己提供的 Hook API
+
+### 使用无头浏览器检查 DOM
+
+* chrome --headless --disable-gpu --enable-logging --dump-dom https://www.google.com/
+* chrome --headless --disable-gpu --enable-logging --dump-dom about:blank > tmp.txt
+
+* puppeteer
