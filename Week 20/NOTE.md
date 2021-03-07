@@ -28,3 +28,18 @@
   * pre-commit.sample
     * 可改写成 nodejs
   * pre-push.sample
+
+### ESLint 基本用法
+
+* npm install --save-dev eslint
+* npx init eslint
+* npx eslint ./index.js
+
+### ESLint API 及其高级用法
+
+* 在提交前检查 lint
+  * 检查 buffer 版本，而不是 local 版本
+    * git stash push -k
+    * git stash pop
+* Web Hook
+  * GitLab, GitHub 自己提供的 Hook API
